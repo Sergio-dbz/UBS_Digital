@@ -34,6 +34,7 @@ Este sistema possui dois front-ends distintos que compartilham o mesmo banco de 
 - **JavaScript (Vanilla)** (Interatividade)
 - **Jinja2** (Template Engine)
 
+```
 ubs_system/
 ├── app.py                          # Aplicação principal Flask
 ├── config.py                       # Configurações do sistema
@@ -54,6 +55,10 @@ ubs_system/
     │   └── style.css              # CSS customizado Medical Blue
     └── img/
         └── logo.png               # Logo UBS Digital
+        
+```
+
+
 ```
 
 ## 🚀 Instalação e Configuração
