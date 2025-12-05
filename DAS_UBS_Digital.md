@@ -1,4 +1,4 @@
-# Documento de Arquitetura de Software (DAS) - UBS DIGITAL
+<img width="3008" height="3608" alt="image" src="https://github.com/user-attachments/assets/93b925c4-d2de-4c52-86bc-052e0275b336" /># Documento de Arquitetura de Software (DAS) - UBS DIGITAL
 
 **Poder Executivo**
 **Ministério da Educação**
@@ -166,7 +166,8 @@ Descreve uma visão lógica da arquitetura, as classes mais importantes, sua org
 ## 5.2 Diagrama de Classes
 
 > **Figura 4 – Exemplo de Diagrama de Classes**
-> <img width="682" height="798" alt="02_classes 1" src="https://github.com/user-attachments/assets/8a72cbae-5e5d-490b-863a-e8d8625890db" />
+> <img width="3008" height="3608" alt="image" src="https://github.com/user-attachments/assets/47bed122-f8ef-4cac-95e1-2c6bd1ced434" />
+
 
 
 ## 5.3 Diagrama de Estado
