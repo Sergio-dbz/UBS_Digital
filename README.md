@@ -296,4 +296,5 @@ Este projeto é de código aberto e está disponível para uso educacional.
 💻 **Stack**: Python + Flask + MySQL + Bootstrap 5
 =======
 # UBS_Digital
->>>>>>> 10c4994e2874420bf4bd4c0c88ba94e368cd0ee0
+![Imagem do WhatsApp de 2025-12-02 à(s) 16 41 51_e4020d0a](https://github.com/user-attachments/assets/fc818bda-903c-4cf3-8d7f-da2b54a92729)
+
