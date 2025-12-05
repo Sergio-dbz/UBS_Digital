@@ -1,4 +1,4 @@
-<img width="3008" height="3608" alt="image" src="https://github.com/user-attachments/assets/93b925c4-d2de-4c52-86bc-052e0275b336" /># Documento de Arquitetura de Software (DAS) - UBS DIGITAL
+# Documento de Arquitetura de Software (DAS) - UBS DIGITAL
 
 **Poder Executivo**
 **Ministério da Educação**
