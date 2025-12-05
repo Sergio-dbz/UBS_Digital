@@ -149,7 +149,8 @@ A descrição de uma arquitetura é ilustrada usando um pequeno conjunto de caso
 ## 4.1 Casos de Uso significantes para a arquitetura
 
 > **Figura 2 – Exemplo de Diagrama com os casos de uso significativos e atores**
-> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+> <img width="800" height="711" alt="01_casos_de_uso 1" src="https://github.com/user-attachments/assets/422ff8a2-9833-41c7-8b34-227c672d2c79" />
+
 
 # 5. VISÃO LÓGICA
 
@@ -163,7 +164,8 @@ Descreve uma visão lógica da arquitetura, as classes mais importantes, sua org
 ## 5.2 Diagrama de Classes
 
 > **Figura 4 – Exemplo de Diagrama de Classes**
-> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+> <img width="682" height="798" alt="02_classes 1" src="https://github.com/user-attachments/assets/8a72cbae-5e5d-490b-863a-e8d8625890db" />
+
 
 ## 5.3 Diagrama de Estado
 
@@ -177,7 +179,8 @@ Descreve o sistema da perspectiva de um programador e está relacionada ao geren
 ## 6.1 Diagrama de Componente
 
 > **Figura 6 – Exemplo de Diagrama de Componente**
-> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+> <img width="800" height="874" alt="07_componentes 1" src="https://github.com/user-attachments/assets/cf1abb07-d883-46d8-92e7-3642780fe6c2" />
+
 
 # 7. VISÃO DE PROCESSOS
 
