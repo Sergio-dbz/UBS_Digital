@@ -172,7 +172,8 @@ Descreve uma visão lógica da arquitetura, as classes mais importantes, sua org
 ## 5.3 Diagrama de Estado
 
 > **Figura 5 – Exemplo de Diagrama de Estado**
-> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+> <img width="966" height="707" alt="diagrama_estados_consulta_limite1" src="https://github.com/user-attachments/assets/ff254ea4-4e43-4467-bd36-0768c4866862" />
+
 
 # 6. VISÃO DE IMPLEMENTAÇÃO
 
