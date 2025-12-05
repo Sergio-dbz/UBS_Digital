@@ -1,306 +1,252 @@
-# Documento de Arquitetura de Software (DAS)
+# Documento de Arquitetura de Software (DAS) - UBS DIGITAL
 
-## [UBS-DIGITAL] – Sistema de Gestão de UBS
+**Poder Executivo**
+**Ministério da Educação**
+**Universidade Federal do Amazonas**
+**Instituto de Ciências Exatas e Tecnologia**
 
-| Gestor do Projeto | Gerente de Projeto |
-| :--- | :--- |
-| [Nome do Gestor] | [Nome do Gerente] |
-| [Email do Gestor] | [Email do Gerente] |
+## Gestão do Projeto
 
-### Objetivo deste Documento
+| Função | Nome | Contato |
+| :--- | :--- | :--- |
+| **Gestor do Projeto** | Anacilia Vieira | anaciliacavalcante@ufam.edu.br |
+| **Gerente de Projeto** | Sérgio Fernandes Mar Filho | sergiofilho0615@gmail.com |
 
-Este documento tem como objetivo descrever as principais decisões de projeto de arquitetura tomadas pela equipe de desenvolvimento e os critérios considerados durante a tomada destas decisões para o sistema **UBS Digital**. Suas informações incluem a parte de hardware e software do sistema, adotando a estrutura baseada na visão “4+1” de modelo de arquitetura.
+## Objetivo deste Documento
 
-### Histórico de Revisão
+Este documento tem como objetivo descrever as principais decisões de projeto de arquitetura tomadas pela equipe de desenvolvimento e os critérios considerados durante a tomada destas decisões para o sistema **UBS Digital**. Suas informações incluem a parte de hardware e software do sistema.
+
+## Histórico de Revisão
 
 | Data | Demanda | Autor | Descrição | Versão |
 | :--- | :--- | :--- | :--- | :--- |
-| 30/11/2025 | [XX000001] | Manus AI | Criação da primeira versão do DAS, baseada no sistema funcional Flask/MySQL. | 1.0 |
+| 25/10/2025 | Inclusão dos Casos de Uso | Ivonete Balieiro de Almeida | Adicionar a lista dos Casos de Uso (001 a 009). | 1.0 |
+| 26/10/2025 | Inserção da Visão Lógica | Sérgio Fernandes Mar Filho | Inclusão do diagrama Casos de Uso significantes para a arquitetura | 1.0 |
+| 27/10/2025 | Inserção da Visão Lógica | Sérgio Fernandes Mar Filho | Visão Geral – pacotes e camadas | 1.0 |
+| 29/10/2025 | Inserção da Visão Lógica | Sérgio Fernandes Mar Filho | Inclusão do Diagrama de Classes | 1.0 |
+| 29/10/2025 | Inserção da Visão Lógica | Ivonete Balieiro de Almeida | Inclusão Diagrama de Estado | 1.0 |
+| 30/10/2025 | Inserção da Visão Lógica | Ivonete Balieiro de Almeida | Inclusão do Diagrama de Componentes | 1.0 |
+| 05/11/2025 | Inserção Visão Lógica | Kaylane Soares Vieira | Inclusão do Diagrama de Sequência | 1.0 |
+| 05/11/2025 | Inserção Visão Lógica | Kaylane Soares Vieira | Inclusão do Diagrama de Atividade | 1.0 |
+| 06/11/2025 | Inclusão Visão Lógica | Marcos Correa Alves | Inclusão do diagrama de Implantação | 1.0 |
 
 ---
 
-## 1. INTRODUÇÃO
+## Sumário
 
-### 1.1 Finalidade
+1.  [INTRODUÇÃO](#1-introdução)
+    1.1. [Finalidade](#11-finalidade)
+    1.2. [Escopo](#12-escopo)
+    1.3. [Definições, Acrônimos e Abreviações](#13-definições-acrônimos-e-abreviações)
+    1.4. [Referências](#14-referências)
+2.  [REPRESENTAÇÃO ARQUITETURAL](#2-representação-arquitetural)
+3.  [REQUISITOS E RESTRIÇÕES ARQUITETURAIS](#3-requisitos-e-restrições-arquiteturais)
+4.  [VISÃO DE CASOS DE USO](#4-visão-de-casos-de-uso)
+    4.1. [Casos de Uso significantes para a arquitetura](#41-casos-de-uso-significantes-para-a-arquitetura)
+5.  [VISÃO LÓGICA](#5-visão-lógica)
+    5.1. [Visão Geral – pacotes e camadas](#51-visão-geral--pacotes-e-camadas)
+    5.2. [Diagrama de Classes](#52-diagrama-de-classes)
+    5.3. [Diagrama de Estado](#53-diagrama-de-estado)
+6.  [VISÃO DE IMPLEMENTAÇÃO](#6-visão-de-implementação)
+    6.1. [Diagrama de Componente](#61-diagrama-de-componente)
+7.  [VISÃO DE PROCESSOS](#7-visão-de-processos)
+    7.1. [Diagrama de Sequência](#71-diagrama-de-sequência)
+    7.2. [Diagrama de Atividade](#72-diagrama-de-atividade)
+8.  [VISÃO DE IMPLANTAÇÃO](#8-visão-de-implantação)
+    8.1. [Diagrama de implantação](#81-diagrama-de-implantação)
+9.  [DIMENSIONAMENTO E PERFORMANCE](#9-dimensionamento-e-performance)
+    9.1. [Volume](#91-volume)
+    9.2. [Performance](#92-performance)
+10. [QUALIDADE](#10-qualidade)
+11. [MUDANÇAS REALIZADAS NA PRIMEIRA VERSÃO DO SOFTWARE (MVP) DURANTE O DESENVOLVIMENTO DO PROJETO DE ARQUITETURA](#11-mudanças-realizadas-na-primeira-versão-do-software-mvp-durante-o-desenvolvimento-do-projeto-de-arquitetura)
 
-Este documento fornece uma visão arquitetural abrangente do sistema **UBS Digital**, usando diversas visões de arquitetura para representar diferentes aspectos do sistema. O objetivo é capturar e comunicar as decisões arquiteturais significativas que foram tomadas em relação ao sistema, que visa modernizar os serviços oferecidos pelas Unidades Básicas de Saúde (UBS) através da digitalização de processos.
+---
 
-### 1.2 Escopo
+# 1. INTRODUÇÃO
 
-Este Documento de Arquitetura de Software se aplica ao sistema **UBS Digital**, que foi desenvolvido pela equipe de [Desenvolvimento Full Stack].
+## 1.1 Finalidade
+
+Este documento fornece uma visão arquitetural abrangente do sistema **UBSdigital**, usando diversas visões de arquitetura para representar diferentes aspectos do sistema. O objetivo deste documento é capturar e comunicar as decisões arquiteturais significativas que foram tomadas em relação ao sistema que visa modernizar os serviços oferecidos pelas Unidades Básicas de Saúde (UBS) através da digitalização de processos. O documento irá adotar uma estrutura baseada na visão **“4+1” de modelo de arquitetura** [KRU41].
+
+> **Figura 1 – Arquitetura 4+1**
+> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+
+## 1.2 Escopo
+
+Este Documento de Arquitetura de Software se aplica ao sistema **UBS Digital**, que será desenvolvido pela equipe de [Desenvolvimento Full Stack].
 
 O UBS Digital consiste no desenvolvimento de um aplicativo web voltado à modernização dos serviços oferecidos pelas Unidades Básicas de Saúde (UBS). O projeto tem como finalidade promover maior acessibilidade, praticidade e eficiência no atendimento aos pacientes, por meio da digitalização de processos de agendamento e gestão de consultas. Visa não apenas melhorar a experiência do usuário (Paciente), mas também otimizar o fluxo de atendimento nas unidades de saúde (Recepcionista).
 
-### 1.3 Definições, Acrônimos e Abreviações
+O público-alvo são os pacientes e recepcionistas de Unidades Básicas de Saúde. Os *stakeholders* relacionados incluem gestores de saúde, médicos e a equipe de desenvolvimento e manutenção do sistema.
+
+## 1.3 Definições, Acrônimos e Abreviações
 
 | Termo | Definição |
 | :--- | :--- |
-| **UBS** | Unidade Básica de Saúde. |
-| **DAS** | Documento de Arquitetura de Software. |
-| **4+1** | Modelo de Arquitetura de Software (Kruchten). |
-| **Flask** | Micro-framework web em Python, utilizado para o backend. |
+| **UBS** | Unidade Básica de Saúde |
+| **DAS** | Documentação de Arquitetura de Software |
+| **4+1** | Modelo de Arquitetura de Software |
+| **Flask** | Micro-framework web em Python, utilizado para backend. |
 | **SQLAlchemy** | Toolkit SQL e Mapeador Objeto-Relacional (ORM) utilizado para interagir com o banco de dados. |
 | **MySQL** | Sistema de Gerenciamento de Banco de Dados Relacional (SGBDR) utilizado para persistência de dados. |
 | **Jinja2** | Template engine utilizada pelo Flask para renderização do frontend (HTML/CSS). |
 | **CNS** | Cartão Nacional de Saúde (Cartão SUS), requisito obrigatório para cadastro de pacientes. |
 | **UI/UX** | User Interface / User Experience. |
 | **Bootstrap 5** | Framework CSS utilizado para o design responsivo e profissional. |
+| **QoS** | Quality of Service (Qualidade de Serviço). Termo utilizado para descrever os requisitos não-funcionais de um sistema, como performance, disponibilidade e escalabilidade. |
 
-### 1.4 Referências
+## 1.4 Referências
 
-| Referência | Descrição |
-| :--- | :--- |
-| [KRU41] | The “4+1” view model of software architecture, Philippe Kruchten, November 1995. |
-| [QOS] | Quality of Service (Qualidade de Serviço). |
-| [FLASK] | Documentação Oficial do Flask (https://flask.palletsprojects.com/). |
-| [SQLA] | Documentação Oficial do SQLAlchemy (https://www.sqlalchemy.org/). |
-| [MYSQL] | Documentação Oficial do MySQL (https://dev.mysql.com/doc/). |
+*   **[KRU41]**: The “4+1” view model of software architecture, Philippe Kruchten, November 1995.
+*   **[QOS]**: Documentação Oracle sobre Quality of Service.
 
----
-
-## 2. REPRESENTAÇÃO ARQUITETURAL
+# 2. REPRESENTAÇÃO ARQUITETURAL
 
 Este documento irá detalhar as visões baseado no modelo “4+1” [KRU41]. As visões utilizadas no documento serão:
 
 | Visão | Público | Área |
 | :--- | :--- | :--- |
-| **Lógica** | Analistas | Realização dos Casos de Uso, Estrutura de Classes/Modelos |
-| **Processo** | Integradores | Performance, Escalabilidade, Concorrência (Fluxos de Execução) |
+| **Lógica** | Analistas | Realização dos Casos de Uso |
+| **Processo** | Integradores | Performance, Escalabilidade, Concorrência |
 | **Implementação** | Programadores | Componentes de Software, Estrutura de Código |
 | **Implantação** | Gerência de Configuração | Nodos físicos, Topologia de Servidores |
 | **Caso de Uso** | Todos | Requisitos funcionais e Cenários |
 
----
+> **Tabela 1 – Visões, Público e Área**
 
-## 3. REQUISITOS E RESTRIÇÕES ARQUITETURAIS
+# 3. REQUISITOS E RESTRIÇÕES ARQUITETURAIS
 
 Esta seção descreve os requisitos de software e restrições que têm um impacto significante na arquitetura.
 
 | Requisito | Solução |
 | :--- | :--- |
-| **Linguagem** | Python 3.x para o backend. |
+| **Linguagem** | Usaremos python para o backend. |
+| **Plataforma** | Servidor de aplicação WSGI (ex: Gunicorn) rodando em ambiente Windows. O frontend é uma aplicação web padrão (HTML/CSS/JS) renderizado no servidor. |
 | **Framework** | Flask (Micro-framework Python). |
 | **Banco de Dados** | MySQL (SGBDR Relacional). |
-| **ORM** | SQLAlchemy (Mapeador Objeto-Relacional). |
-| **Frontend** | HTML5, CSS3, JavaScript (Vanilla) e Bootstrap 5 (via Jinja2 templates). |
-| **Plataforma** | Servidor de Aplicações WSGI (ex: Gunicorn, uWSGI) rodando em ambiente Linux (Ubuntu). |
+| **Frontend** | HTML5, CSS3, JavaScript (Vanilla) e Bootstrap5 (via Jinja2 templates.) |
 | **Segurança** | Autenticação baseada em sessão (Flask Session). Senhas armazenadas em texto simples (restrição do MVP, deve ser migrado para Hash - bcrypt - em produção). |
-| **Internacionalização (i18n)** | Não implementada no MVP. O sistema utiliza apenas o idioma Português (pt-BR). |
-| **Restrição de Cadastro** | Apenas usuários com perfil **Recepcionista** podem cadastrar novos pacientes. |
-| **Restrição de Dados** | O campo **Cartão SUS (CNS)** é obrigatório para o cadastro de pacientes. |
-| **Restrição de Agendamento** | Pacientes só podem agendar consultas para datas futuras. |
+| **Internacionalização (i18n)** | Não implementado no MVP. O sistema utiliza apenas o idioma Português (pt-BR). |
 
----
+> **Tabela 2 – Exemplo de requisitos e restrições**
 
-## 4. VISÃO DE CASOS DE USO
+# 4. VISÃO DE CASOS DE USO
 
-A descrição de uma arquitetura é ilustrada usando um pequeno conjunto de casos de usos, ou cenários.
+A descrição de uma arquitetura é ilustrada usando um pequeno conjunto de casos de usos, ou cenários. Os cenários descrevem sequências de interações entre objetos e entre processos. Eles são usados para identificar elementos arquitetônicos e para ilustrar e validar o design da arquitetura. Eles também servem como um ponto de partida para testes de um protótipo de arquitetura.
 
-### Lista de Casos de Uso do Sistema
+**Lista de casos de uso do sistema:**
 
-- **CU001: Autenticar Usuário** (Paciente ou Recepcionista)
-- **CU002: Cadastrar Novo Paciente** (Apenas Recepcionista)
-- **CU003: Agendar Consulta** (Apenas Paciente)
-- **CU004: Visualizar Agenda de Consultas** (Apenas Recepcionista)
-- **CU005: Atualizar Status da Consulta** (Apenas Recepcionista)
-- **CU006: Visualizar Histórico de Consultas** (Apenas Paciente)
+*   **Caso de Uso [001]:** Autenticar Usuário (Paciente ou Recepcionista)
+*   **Caso de Uso [002]:** Cadastrar Novo Paciente (Apenas Recepcionista)
+*   **Caso de Uso [003]:** Agendar Consulta (Apenas paciente)
+*   **Caso de Uso [004]:** Visualizar Consultas Agendadas (Apenas paciente)
+*   **Caso de Uso [005]:** Visualizar Histórico de Consultas (Apenas paciente)
+*   **Caso de Uso [006]:** Visualizar Agenda Completa de consultas (Apenas Recepcionista)
+*   **Caso de Uso [007]:** Atualizar Status de Consulta (Apenas Recepcionista)
+*   **Caso de Uso [008]:** Listar Pacientes Cadastrado (Apenas Recepcionista)
+*   **Caso de Uso [009]:** Visualizar Médicos Disponíveis (Apenas Paciente)
 
-### 4.1 Casos de Uso Significantes para a Arquitetura
+## 4.1 Casos de Uso significantes para a arquitetura
 
-Os casos de uso mais significantes para a arquitetura são aqueles que envolvem a persistência de dados e a distinção de perfis de acesso.
+> **Figura 2 – Exemplo de Diagrama com os casos de uso significativos e atores**
+> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
 
-#### Cenário 1: Cadastro de Paciente (Recepcionista)
+# 5. VISÃO LÓGICA
 
-1. **Ator:** Recepcionista.
-2. **Fluxo:** Recepcionista acessa o dashboard, navega para a seção de cadastro, preenche os dados do paciente (incluindo CNS e senha), e submete o formulário.
-3. **Arquitetura:** A rota `/recepcionista/cadastrar_paciente` verifica o `session['user_type']`. O modelo `Paciente` do SQLAlchemy é instanciado e o método `db.session.add()` e `db.session.commit()` são chamados para persistir os dados no MySQL.
+Descreve uma visão lógica da arquitetura, as classes mais importantes, sua organização em pacotes de serviços e subsistemas, e a organização desses subsistemas em camadas. Também descreve as realizações dos casos de uso mais importantes, por exemplo, aspectos dinâmicos da arquitetura. Diagrama de classes e diagrama de estado devem ser incluídos para ilustrar os relacionamentos entre as classes significativas na arquitetura, subsistemas, pacotes e camadas.
 
-#### Cenário 2: Agendamento de Consulta (Paciente)
+## 5.1 Visão Geral – pacotes e camadas
 
-1. **Ator:** Paciente.
-2. **Fluxo:** Paciente acessa o dashboard, visualiza a lista de médicos, seleciona um médico e uma data/hora **futura**, e submete o agendamento.
-3. **Arquitetura:** A rota `/paciente/agendar` verifica o `session['user_type']`. O sistema valida se a `data_hora` é maior que a data atual. O modelo `Consulta` é instanciado, ligando `paciente_id` e `medico_id` (Foreign Keys), e o status inicial é definido como 'Agendada'.
+> **Figura 3 – Exemplo de Diagrama de Camadas da Aplicação**
+> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
 
-#### Cenário 3: Visualização do Histórico (Paciente)
+## 5.2 Diagrama de Classes
 
-1. **Ator:** Paciente.
-2. **Fluxo:** Paciente acessa a aba "Histórico".
-3. **Arquitetura:** A rota `/paciente/historico` executa uma consulta complexa no SQLAlchemy:
-    - Filtra pelo `paciente_id` logado.
-    - Filtra por `data_hora < datetime.now()` (apenas consultas passadas).
-    - Filtra por `status IN ('Realizada', 'Faltou')` (apenas status definidos pelo recepcionista).
-    - Realiza JOIN com a tabela `medicos` para exibir os detalhes.
+> **Figura 4 – Exemplo de Diagrama de Classes**
+> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
 
----
+## 5.3 Diagrama de Estado
 
-## 5. VISÃO LÓGICA
+> **Figura 5 – Exemplo de Diagrama de Estado**
+> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
 
-Descreve uma visão lógica da arquitetura, as classes mais importantes, sua organização em pacotes de serviços e subsistemas, e a organização desses subsistemas em camadas.
+# 6. VISÃO DE IMPLEMENTAÇÃO
 
-### 5.1 Visão Geral – pacotes e camadas
+Descreve o sistema da perspectiva de um programador e está relacionada ao gerenciamento de software. Os diagramas UML usados para representar a visão de desenvolvimento incluem o diagrama de componente.
 
-A arquitetura lógica do UBS Digital segue o padrão **Model-View-Controller (MVC)**, adaptado ao contexto do Flask, que utiliza o padrão **Model-View-Template (MVT)**.
+## 6.1 Diagrama de Componente
 
-| Camada | Componentes | Descrição |
-| :--- | :--- | :--- |
-| **Apresentação (View/Template)** | `templates/`, `static/` | Responsável pela interface do usuário (HTML, CSS, JS). Utiliza Jinja2 para renderização dinâmica. |
-| **Lógica de Negócio (Controller/Routes)** | `app.py` (Rotas) | Contém as rotas do Flask, a lógica de autenticação, validação de regras de negócio (ex: data futura, permissão de cadastro) e a coordenação entre as camadas. |
-| **Acesso a Dados (Model/ORM)** | `app.py` (Classes de Modelo) | Mapeamento Objeto-Relacional (ORM) usando SQLAlchemy. Define as classes `Paciente`, `Recepcionista`, `Medico` e `Consulta`, que representam as tabelas do banco. |
-| **Persistência (Database)** | MySQL | Armazenamento físico dos dados. |
+> **Figura 6 – Exemplo de Diagrama de Componente**
+> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
 
-### 5.2 Diagrama de Classes (Modelos de Dados)
+# 7. VISÃO DE PROCESSOS
 
-O diagrama de classes reflete os modelos de dados definidos no `app.py` e no `schema.sql`.
+A visão do processo lida com os aspectos dinâmicos do sistema, explica os processos do sistema e como eles se comunicam, e foca no comportamento do tempo de execução do sistema. A visão do processo aborda simultaneidade, distribuição, integrador, desempenho e escalabilidade, etc. Os diagramas UML para representar a visão do processo incluem o diagrama de sequência e diagrama de atividade.
 
-| Classe | Atributos Chave | Relacionamentos |
-| :--- | :--- | :--- |
-| **Paciente** | id, nome, cpf, senha, **cns** | 1:N com Consulta |
-| **Recepcionista** | id, login, senha, nome | N/A |
-| **Medico** | id, nome, especialidade | 1:N com Consulta |
-| **Consulta** | id, paciente_id, medico_id, data_hora, status | N:1 com Paciente, N:1 com Medico |
+## 7.1 Diagrama de Sequência
 
-**Relacionamentos:**
-- Um **Paciente** pode ter muitas **Consultas**.
-- Um **Medico** pode ter muitas **Consultas**.
-- Uma **Consulta** pertence a um **Paciente** e a um **Medico**.
+> **Figura 7 – Exemplo de Diagrama de Sequência**
+> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
 
-### 5.3 Diagrama de Estado (Consulta)
+## 7.2 Diagrama de Atividade
 
-O objeto `Consulta` possui um ciclo de vida bem definido, gerenciado principalmente pelo Recepcionista.
+> **Figura 8 – Exemplo de Diagrama de Atividade**
+> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
 
-| Estado | Transição | Gatilho |
-| :--- | :--- | :--- |
-| **Agendada** | Compareceu | Recepcionista clica em "Compareceu" |
-| **Agendada** | Faltou | Recepcionista clica em "Faltou" |
-| **Realizada** | N/A | Estado final (Histórico) |
-| **Faltou** | N/A | Estado final (Histórico) |
+# 8. VISÃO DE IMPLANTAÇÃO
 
----
+Descreve o sistema do ponto de vista de um engenheiro de sistemas. Se preocupa com a topologia dos componentes de software na camada física, bem como com as conexões físicas entre esses componentes. Os diagramas UML usados para representar a visão física incluem o diagrama de implantação.
 
-## 6. VISÃO DE IMPLEMENTAÇÃO
+## 8.1 Diagrama de implantação
 
-Descreve o sistema da perspectiva de um programador e está relacionada ao gerenciamento de software.
+> **Figura 6 – Exemplo de Diagrama de Implantação Java**
+> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
 
-### 6.1 Diagrama de Componente
+# 9. DIMENSIONAMENTO E PERFORMANCE
 
-O sistema é composto por três componentes principais:
+## 9.1 Volume
 
-1. **Componente Frontend (Web Client):**
-    - **Tecnologia:** HTML, CSS (Bootstrap 5), JavaScript, Jinja2 Templates.
-    - **Função:** Renderiza a interface do usuário e envia requisições HTTP para o Backend.
+Itens relativos ao volume de acesso aos recursos da aplicação:
 
-2. **Componente Backend (Flask Application):**
-    - **Tecnologia:** Python, Flask, SQLAlchemy.
-    - **Função:** Contém a lógica de negócio, rotas, autenticação e a camada ORM. É o ponto central de processamento.
+*   Número estimado de usuários: **8.024**
+*   Número estimado de acessos diários: **150**
+*   Número estimado de acessos por período: **1000 / semana**
+*   Tempo de sessão de um usuário: **15 minutos**
 
-3. **Componente Persistência (MySQL Database):**
-    - **Tecnologia:** MySQL.
-    - **Função:** Armazena os dados de forma relacional e segura.
+## 9.2 Performance
 
-**Interações:**
-- O **Web Client** se comunica com o **Flask Application** via HTTP (GET/POST).
-- O **Flask Application** se comunica com o **MySQL Database** via driver PyMySQL e SQLAlchemy.
+Itens referentes à resposta esperada do sistema:
 
----
+*   Login (Autenticação): **3 segundos**
+*   Carregamento da Página Inicial (Dashboard): **3 segundos**
+*   Efetivar Agendamento: **4 segundos**
+*   Visualizar Histórico de Consultas: **2 segundos**
+*   Carregar Perfil do Usuário: **2 segundos**
 
-## 7. VISÃO DE PROCESSOS
+# 10. QUALIDADE
 
-A visão do processo lida com os aspectos dinâmicos do sistema, explicando os processos e como eles se comunicam.
-
-### 7.1 Diagrama de Sequência (Exemplo: Atualização de Status)
-
-| Participante | Ação |
-| :--- | :--- |
-| **Recepcionista** | 1. Acessa Dashboard (GET /recepcionista/dashboard) |
-| **Flask (Rotas)** | 2. Verifica autenticação e tipo de usuário (Recepcionista) |
-| **SQLAlchemy (ORM)** | 3. Consulta todas as Consultas e Pacientes (SELECT * FROM consultas JOIN pacientes) |
-| **Flask (Rotas)** | 4. Renderiza `dashboard_recepcionista.html` com a lista de consultas |
-| **Recepcionista** | 5. Clica no botão "Compareceu" para Consulta ID #X (GET /recepcionista/atualizar_status/X/Realizada) |
-| **Flask (Rotas)** | 6. Recebe a requisição e busca a Consulta #X no banco |
-| **SQLAlchemy (ORM)** | 7. Atualiza o campo `status` para 'Realizada' e commita a transação (UPDATE consultas SET status='Realizada' WHERE id=X) |
-| **Flask (Rotas)** | 8. Redireciona para o Dashboard com mensagem de sucesso |
-
-### 7.2 Diagrama de Atividade (Exemplo: Login Unificado)
-
-1. **Início**
-2. **Atividade:** Usuário acessa `/login`
-3. **Decisão:** Tipo de Usuário?
-    - **Se Paciente:**
-        - **Atividade:** Buscar Paciente por CPF e Senha
-        - **Decisão:** Encontrado?
-            - **Sim:** Criar Sessão (user_type='paciente') -> Redirecionar para Dashboard Paciente
-            - **Não:** Exibir Mensagem de Erro -> Voltar para Login
-    - **Se Recepcionista:**
-        - **Atividade:** Buscar Recepcionista por Login e Senha
-        - **Decisão:** Encontrado?
-            - **Sim:** Criar Sessão (user_type='recepcionista') -> Redirecionar para Dashboard Recepcionista
-            - **Não:** Exibir Mensagem de Erro -> Voltar para Login
-4. **Fim**
-
----
-
-## 8. VISÃO DE IMPLANTAÇÃO
-
-Descreve o sistema do ponto de vista de um engenheiro de sistemas, preocupando-se com a topologia dos componentes de software na camada física.
-
-### 8.1 Diagrama de Implantação
-
-| Nodo | Componentes | Descrição |
-| :--- | :--- | :--- |
-| **NODO 1: Cliente (Navegador)** | HTML, CSS, JS, Bootstrap 5 | Qualquer dispositivo com navegador web (Desktop, Mobile, Tablet). |
-| **NODO 2: Servidor de Aplicação (Linux)** | **Sistema Operacional:** Ubuntu/Linux<br>**Servidor Web:** Gunicorn/uWSGI<br>**Aplicação:** Python 3.x, Flask, SQLAlchemy, PyMySQL | Servidor onde a aplicação Flask está hospedada. Recebe requisições HTTP e processa a lógica de negócio. |
-| **NODO 3: Servidor de Banco de Dados (Linux)** | **Sistema Operacional:** Ubuntu/Linux<br>**SGBDR:** MySQL Server | Servidor dedicado ou co-localizado para persistência de dados. |
-
-**Conexões:**
-- **Cliente** <-> **Servidor de Aplicação:** HTTP/HTTPS (Porta 80/443)
-- **Servidor de Aplicação** <-> **Servidor de Banco de Dados:** TCP/IP (Porta 3306)
-
----
-
-## 9. DIMENSIONAMENTO E PERFORMANCE
-
-### 9.1 Volume
-
-| Item | Valor Estimado |
-| :--- | :--- |
-| **Número estimado de usuários (Pacientes)** | 5.000 |
-| **Número estimado de usuários (Recepcionistas)** | 10 |
-| **Número estimado de acessos diários** | 500 |
-| **Número estimado de consultas agendadas (Total)** | 10.000 |
-| **Tempo de sessão de um usuário** | 30 minutos |
-
-### 9.2 Performance
-
-| Item | Resposta Esperada |
-| :--- | :--- |
-| **Tempo máximo para Login** | < 500 ms |
-| **Tempo máximo para Cadastro de Paciente** | < 800 ms |
-| **Tempo máximo para Agendamento de Consulta** | < 1.000 ms |
-| **Tempo máximo para Visualização da Agenda (Recepcionista)** | < 1.500 ms (considerando grande volume de dados) |
-
----
-
-## 10. QUALIDADE
-
-Enumerar os itens de qualidade de software [QOS] significativos para a aplicação:
+Itens de qualidade de software [QOS] significativos para a aplicação:
 
 | Item | Descrição | Solução |
 | :--- | :--- | :--- |
-| **Escalabilidade** | Capacidade de o sistema crescer e lidar com um aumento de demanda sem perda significativa de desempenho. | **Solução:** Arquitetura de 3 camadas (Web/App/DB) desacoplada. O Flask é leve e pode ser facilmente escalado horizontalmente com balanceadores de carga (Load Balancers) e múltiplos workers Gunicorn/uWSGI. O MySQL pode ser configurado com réplicas de leitura. |
-| **Confiabilidade, Disponibilidade** | Capacidade de o sistema funcionar corretamente e consistentemente ao longo do tempo, mesmo diante de falhas. | **Solução:** Uso de SGBDR (MySQL) com transações ACID. Uso de ORM (SQLAlchemy) para abstração e tratamento de erros de banco. Uso de servidor de aplicação robusto (Gunicorn/uWSGI) com reinicialização automática de workers em caso de falha. |
-| **Portabilidade** | Capacidade de o sistema ser executado em diferentes ambientes com pouca ou nenhuma modificação. | **Solução:** Uso de Python e Flask, que são multi-plataforma. O projeto pode ser facilmente empacotado em contêineres Docker, garantindo que o ambiente de desenvolvimento, teste e produção sejam idênticos. |
-| **Segurança** | Conjunto de práticas e mecanismos usados para proteger dados, recursos e operações. | **Solução:** Autenticação baseada em sessão. Uso de prepared statements (via SQLAlchemy) para prevenir SQL Injection. Validação de regras de negócio (ex: permissão de Recepcionista para cadastro). **Melhoria Futura:** Implementação de Hash de Senhas (bcrypt) e HTTPS. |
+| **Escalabilidade** | Capacidade de um sistema crescer e lidar com um aumento de demanda - seja de usuários, dados ou requisições - sem perda significativa de desempenho, disponibilidade ou eficiência. | A arquitetura utiliza componentes desacoplados (servidor web, aplicação, banco de dados), permitindo escalonamento horizontal de cada camada de forma independente. O uso de um balanceador de carga (Nginx) pode distribuir o tráfego entre múltiplas instâncias da aplicação Flask. |
+| **Confiabilidade, Disponibilidade** | Capacidade de um sistema funcionar corretamente e consistentemente ao longo do tempo, mesmo diante de falhas, altos volumes de uso ou condições inesperadas. | O sistema pode ser implantado em uma configuração de alta disponibilidade com replicação de banco de dados (Master-Slave) e múltiplas instâncias do servidor de aplicação. Ferramentas de monitoramento podem ser usadas para detectar falhas e reiniciar serviços automaticamente. |
+| **Portabilidade** | Capacidade de um sistema ser executado em diferentes ambientes, plataformas ou dispositivos com pouca ou nenhuma modificação no código-fonte. | O uso de Python e tecnologias web padrão (HTML/CSS/JS) garante alta portabilidade. A aplicação pode ser executada em qualquer sistema operacional que suporte Python e MySQL. A conteinerização com pode abstrair completamente o ambiente de execução, garantindo Portabilidade máxima. |
+| **Segurança** | É o conjunto de práticas, técnicas e mecanismos usados para proteger dados, recursos e operações contra acessos não autorizados, falhas, ataques e vazamentos. | A segurança é tratada através de sessões seguras no Flask, validação de entrada e parametrização de consultas SQL (via SQLAlchemy) para prevenir SQL Injection. Para produção, recomenda-se o uso de HTTPS (SSL/TLS), *hashing* de senhas (bcrypt) e proteção contra CSRF. |
 
----
+# 11. MUDANÇAS REALIZADAS NA PRIMEIRA VERSÃO DO SOFTWARE (MVP) DURANTE O DESENVOLVIMENTO DO PROJETO DE ARQUITETURA
 
-## 11. MUDANÇAS REALIZADAS NA PRIMEIRA VERSÃO DO SOFTWARE (MVP) DURANTE O DESENVOLVIMENTO DO PROJETO DE ARQUITETURA
+Durante o desenvolvimento do projeto de arquitetura da UBS Digital, algumas mudanças importantes foram aplicadas em relação ao MVP inicial, visando melhorar a organização, a performance e a escalabilidade futura do sistema. As principais alterações foram:
 
-| Data | Descrição da Mudança | Impacto na Arquitetura |
-| :--- | :--- | :--- |
-| 30/11/2025 | Refatoração completa da interface de usuário (UI/UX) para um design profissional "Medical Blue". | **Visão de Implementação/Lógica:** Nenhuma alteração no backend (Python/Flask/SQLAlchemy). **Visão de Apresentação:** Migração total para Bootstrap 5, Bootstrap Icons e CSS customizado profissional. |
-| 30/11/2025 | Adição do campo **Cartão SUS (CNS)** como obrigatório no cadastro de pacientes. | **Visão Lógica/Acesso a Dados:** Adição da coluna `cns` na tabela `pacientes` com restrição `NOT NULL UNIQUE`. Lógica de validação adicionada na rota de cadastro do Recepcionista. |
-| 30/11/2025 | Implementação de filtro no Histórico do Paciente para mostrar apenas consultas com status 'Realizada' ou 'Faltou'. | **Visão Lógica/Acesso a Dados:** Criação de uma query complexa no SQLAlchemy para aplicar filtros de data (`data_hora < NOW()`) e status (`status IN (...)`). |
+1.  **Formalização da Tecnologia:** Antes era um modelo de dados genérico (SQL). Agora, a arquitetura está travada em Python (Flask) com SQLAlchemy (ORM) e Jinja2. Isso muda a forma como pensamos nas classes (agora são Models de uma aplicação).
+2.  **Papel da Recepcionista:** No PDF original, o foco era quase total no Paciente. No DAS, a Recepcionista ganhou protagonismo com casos de uso exclusivos (UC002, UC006, UC007, UC008), tornando-se a administradora do sistema.
+3.  **Escopo de Segurança:** O DAS define explicitamente que senhas são texto simples no MVP (produto mínimo viável), mas agora são senhas com *hash* para maior segurança, e define a sessão via Flask.
+4.  **Restrições de Negócio:** O DAS introduz regras claras sobre Performance (Login em 3s) e Volume (estimativa de 8.024 usuários).
 
----
+### Transição de Aplicativo Nativo (Mobile) para Aplicação Web Responsiva
 
-**FIM DO DOCUMENTO**
+A principal alteração arquitetural realizada nesta versão foi a mudança do modelo de entrega de um Aplicativo Nativo (Android) para um **Sistema Web Responsivo (Aplicação Web)**. Esta decisão foi tomada com base nos seguintes critérios de arquitetura:
+
+1.  **Alteração da Stack Tecnológica:** Optou-se pela utilização do micro-framework Flask (Python) com renderização de templates via Jinja2 e estilização com Bootstrap 5. Esta abordagem elimina a necessidade de desenvolver *frontends* separados (Mobile/Desktop), permitindo uma única base de código que se adapta a diferentes telas.
+2.  **Maximização da Portabilidade:** Enquanto o escopo inicial limitava o acesso a dispositivos Android, a nova arquitetura Web garante que o sistema seja acessível por qualquer dispositivo (Smartphones iOS/Android, Tablets e Desktops) que possua um navegador web, atendendo ao requisito de qualidade de Portabilidade descrito na arquitetura.
+3.  **Facilidade de Implantação e Manutenção (MVP):** A arquitetura centralizada no servidor (*Server-Side Rendering*) simplifica o ciclo de atualizações. Correções de *bugs* e novas *features* tornam-se disponíveis instantaneamente para todos os usuários (Pacientes e Recepcionistas), sem a necessidade de os usuários atualizarem um aplicativo em suas lojas de aplicativos, o que agiliza a validação do MVP.
