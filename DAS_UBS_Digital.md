@@ -69,7 +69,8 @@ Este documento tem como objetivo descrever as principais decisões de projeto de
 Este documento fornece uma visão arquitetural abrangente do sistema **UBSdigital**, usando diversas visões de arquitetura para representar diferentes aspectos do sistema. O objetivo deste documento é capturar e comunicar as decisões arquiteturais significativas que foram tomadas em relação ao sistema que visa modernizar os serviços oferecidos pelas Unidades Básicas de Saúde (UBS) através da digitalização de processos. O documento irá adotar uma estrutura baseada na visão **“4+1” de modelo de arquitetura** [KRU41].
 
 > **Figura 1 – Arquitetura 4+1**
-> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+> ![Imagem do WhatsApp de 2025-12-05 à(s) 13 15 02_f318c171](https://github.com/user-attachments/assets/75cba69e-3287-4343-8847-5cda3b93ffff)
+
 
 ## 1.2 Escopo
 
@@ -159,7 +160,8 @@ Descreve uma visão lógica da arquitetura, as classes mais importantes, sua org
 ## 5.1 Visão Geral – pacotes e camadas
 
 > **Figura 3 – Exemplo de Diagrama de Camadas da Aplicação**
-> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+> <img width="875" height="766" alt="diagrama_camadas_web_only" src="https://github.com/user-attachments/assets/33fc466c-958a-4895-9a47-97ebeaeda2f1" />
+
 
 ## 5.2 Diagrama de Classes
 
@@ -179,7 +181,7 @@ Descreve o sistema da perspectiva de um programador e está relacionada ao geren
 ## 6.1 Diagrama de Componente
 
 > **Figura 6 – Exemplo de Diagrama de Componente**
-> <img width="800" height="874" alt="07_componentes 1" src="https://github.com/user-attachments/assets/cf1abb07-d883-46d8-92e7-3642780fe6c2" />
+> <img width="850" height="874" alt="07_componentes 1" src="https://github.com/user-attachments/assets/cf1abb07-d883-46d8-92e7-3642780fe6c2" />
 
 
 # 7. VISÃO DE PROCESSOS
@@ -189,12 +191,15 @@ A visão do processo lida com os aspectos dinâmicos do sistema, explica os proc
 ## 7.1 Diagrama de Sequência
 
 > **Figura 7 – Exemplo de Diagrama de Sequência**
-> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+> <img width="800" height="874" alt="07_componentes 1" src="https://github.com/user-attachments/assets/44d6eaa5-4cf2-4963-9f1c-812dd8914b21" />
+
+
+
 
 ## 7.2 Diagrama de Atividade
 
 > **Figura 8 – Exemplo de Diagrama de Atividade**
-> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+> <img width="800" height="874" alt="07_componentes 1" src="https://github.com/user-attachments/assets/5271e85c-f7f0-4031-b407-792b497ca68d" />
 
 # 8. VISÃO DE IMPLANTAÇÃO
 
@@ -203,7 +208,8 @@ Descreve o sistema do ponto de vista de um engenheiro de sistemas. Se preocupa c
 ## 8.1 Diagrama de implantação
 
 > **Figura 6 – Exemplo de Diagrama de Implantação Java**
-> (Diagrama não reproduzido em Markdown. Consultar o documento original.)
+> <img width="646" height="1271" alt="08_implantacao 1" src="https://github.com/user-attachments/assets/d8570b05-443b-4678-9eb6-06bc73d56cd7" />
+
 
 # 9. DIMENSIONAMENTO E PERFORMANCE
 
