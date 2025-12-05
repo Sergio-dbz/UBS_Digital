@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Recepcionista - UBS Digital{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Cabeçalho do Dashboard -->
+    <div class="dashboard-header text-center">
+        <div class="container">
+            <h2>
+                <i class="bi bi-person-badge me-2"></i>
+                Painel do Recepcionista
+            </h2>
+            <p>Gerencie pacientes, consultas e atualize status de atendimentos</p>
+        </div>
+    </div>
+
+    <!-- Navegação por Tabs -->
+    <ul class="nav nav-tabs nav-fill mb-4" id="recepTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="agenda-tab" data-bs-toggle="tab" 
+                    data-bs-target="#agenda-section" type="button" role="tab">
+                <i class="bi bi-calendar3 me-2"></i>
+                Agenda de Consultas
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cadastrar-tab" data-bs-toggle="tab" 
+                    data-bs-target="#cadastrar-section" type="button" role="tab">
+                <i class="bi bi-person-plus me-2"></i>
+                Cadastrar Paciente
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pacientes-tab" data-bs-toggle="tab" 
+                    data-bs-target="#pacientes-section" type="button" role="tab">
+                <i class="bi bi-people me-2"></i>
+                Lista de Pacientes
+            </button>
+        </li>
+    </ul>
+
+    <!-- Conteúdo das Tabs -->
+    <div class="tab-content" id="recepTabContent">
+        <!-- Seção: Agenda de Consultas -->
+        <div class="tab-pane fade show active" id="agenda-section" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-calendar3 me-2"></i>
+                    Agenda Completa de Consultas
+                </div>
+                <div class="card-body">
+                    {% if consultas %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        Data/Hora
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-person me-1"></i>
+                                        Paciente
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        Médico
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-heart-pulse me-1"></i>
+                                        Especialidade
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Status
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-gear me-1"></i>
+                                        Ações
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consulta in consultas %}
+                                <tr class="status-row-{{ consulta.status.lower() }}">
+                                    <td><strong>#{{ consulta.id }}</strong></td>
+                                    <td>
+                                        <strong>{{ consulta.data_hora.strftime('%d/%m/%Y') }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ consulta.data_hora.strftime('%H:%M') }}</small>
+                                    </td>
+                                    <td>{{ consulta.paciente.nome }}</td>
+                                    <td>{{ consulta.medico.nome }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ consulta.medico.especialidade }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-{{ consulta.status.lower() }}">
+                                            {{ consulta.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if consulta.status == 'Agendada' %}
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ url_for('atualizar_status_consulta', consulta_id=consulta.id, novo_status='Realizada') }}" 
+                                               class="btn btn-success" 
+                                               onclick="return confirm('Confirmar que o paciente compareceu?')"
+                                               title="Marcar como Realizada">
+                                                <i class="bi bi-check-circle"></i>
+                                            </a>
+                                            <a href="{{ url_for('atualizar_status_consulta', consulta_id=consulta.id, novo_status='Faltou') }}" 
+                                               class="btn btn-danger" 
+                                               onclick="return confirm('Confirmar que o paciente faltou?')"
+                                               title="Marcar como Faltou">
+                                                <i class="bi bi-x-circle"></i>
+                                            </a>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-muted">
+                                            <i class="bi bi-lock"></i> Finalizada
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="no-data">
+                        <i class="bi bi-calendar-x"></i>
+                        <p>Nenhuma consulta cadastrada no sistema</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Cadastrar Novo Paciente -->
+        <div class="tab-pane fade" id="cadastrar-section" role="tabpanel">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-person-plus me-2"></i>
+                            Cadastrar Novo Paciente
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('cadastrar_paciente') }}">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="nome" class="form-label">
+                                            <i class="bi bi-person me-1"></i>
+                                            Nome Completo *
+                                        </label>
+                                        <input type="text" name="nome" id="nome" class="form-control" 
+                                               placeholder="Nome completo do paciente" required>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cpf" class="form-label">
+                                            <i class="bi bi-card-text me-1"></i>
+                                            CPF *
+                                        </label>
+                                        <input type="text" name="cpf" id="cpf" class="form-control" 
+                                               placeholder="000.000.000-00" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cns" class="form-label">
+                                            <i class="bi bi-credit-card-2-front me-1"></i>
+                                            Cartão SUS (CNS) *
+                                        </label>
+                                        <input type="text" name="cns" id="cns" class="form-control" 
+                                               placeholder="000000000000000" maxlength="15" required>
+                                        <small class="form-text">Número obrigatório de 15 dígitos</small>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="senha" class="form-label">
+                                            <i class="bi bi-lock me-1"></i>
+                                            Senha de Acesso *
+                                        </label>
+                                        <input type="password" name="senha" id="senha" class="form-control" 
+                                               placeholder="Senha para login do paciente" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="telefone" class="form-label">
+                                            <i class="bi bi-telephone me-1"></i>
+                                            Telefone
+                                        </label>
+                                        <input type="text" name="telefone" id="telefone" class="form-control" 
+                                               placeholder="(00) 00000-0000">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="data_nascimento" class="form-label">
+                                            <i class="bi bi-calendar-heart me-1"></i>
+                                            Data de Nascimento
+                                        </label>
+                                        <input type="date" name="data_nascimento" id="data_nascimento" 
+                                               class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info mt-3">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <strong>Importante:</strong> Após o cadastro, forneça o CPF e a senha ao paciente para que ele possa acessar o sistema.
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 mt-3">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Cadastrar Paciente
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Lista de Pacientes -->
+        <div class="tab-pane fade" id="pacientes-section" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-people me-2"></i>
+                    Lista de Pacientes Cadastrados
+                </div>
+                <div class="card-body">
+                    {% if pacientes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>
+                                        <i class="bi bi-person me-1"></i>
+                                        Nome
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-card-text me-1"></i>
+                                        CPF
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-credit-card-2-front me-1"></i>
+                                        Cartão SUS (CNS)
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-telephone me-1"></i>
+                                        Telefone
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-calendar-heart me-1"></i>
+                                        Data Nascimento
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-gear me-1"></i>
+                                        Ações
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for paciente in pacientes %}
+                                <tr>
+                                    <td><strong>#{{ paciente.id }}</strong></td>
+                                    <td>{{ paciente.nome }}</td>
+                                    <td>{{ paciente.cpf }}</td>
+                                    <td>
+                                        <span class="badge bg-info text-dark">{{ paciente.cns }}</span>
+                                    </td>
+                                    <td>{{ paciente.telefone or '-' }}</td>
+                                    <td>
+                                        {{ paciente.data_nascimento.strftime('%d/%m/%Y') if paciente.data_nascimento else '-' }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('editar_paciente', paciente_id=paciente.id) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           title="Editar dados do paciente">
+                                            <i class="bi bi-pencil-square me-1"></i> Editar
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="no-data">
+                        <i class="bi bi-people"></i>
+                        <p>Nenhum paciente cadastrado no sistema</p>
+                        <a href="#cadastrar-section" data-bs-toggle="tab" data-bs-target="#cadastrar-section" 
+                           class="btn btn-primary mt-3">
+                            <i class="bi bi-person-plus me-2"></i>
+                            Cadastrar Primeiro Paciente
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+{% endblock %}

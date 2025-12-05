@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Meu Perfil - UBS Digital{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Cabeçalho -->
+    <div class="dashboard-header text-center">
+        <div class="container">
+            <h2>
+                <i class="bi bi-person-vcard me-2"></i>
+                Meu Perfil
+            </h2>
+            <p>Visualize e atualize suas informações de contato</p>
+        </div>
+    </div>
+
+    <!-- Botão Voltar -->
+    <div class="mb-4">
+        <a href="{{ url_for('dashboard_paciente') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Voltar ao Dashboard
+        </a>
+    </div>
+
+    <!-- Card de Perfil -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-person-fill me-2"></i>
+            Dados Cadastrais
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('atualizar_perfil_paciente') }}">
+                <div class="row">
+                    <!-- Coluna 1: Dados Pessoais (Não Editáveis) -->
+                    <div class="col-md-6">
+                        <h5 class="text-primary mb-3">Informações Pessoais </h5>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">
+                                <strong><i class="bi bi-person me-2"></i>Nome Completo:</strong> 
+                                <span class="float-end">{{ paciente.nome }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong><i class="bi bi-credit-card me-2"></i>CPF:</strong> 
+                                <span class="float-end">{{ paciente.cpf }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong><i class="bi bi-hospital me-2"></i>Cartão SUS (CNS):</strong> 
+                                <span class="float-end text-success fw-bold">{{ paciente.cns }}</span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong><i class="bi bi-calendar me-2"></i>Data de Nascimento:</strong> 
+                                <span class="float-end">
+                                    {% if paciente.data_nascimento %}
+                                        {{ paciente.data_nascimento.strftime('%d/%m/%Y') }}
+                                    {% else %}
+                                        Não informado
+                                    {% endif %}
+                                </span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong><i class="bi bi-clock me-2"></i>Membro Desde:</strong> 
+                                <span class="float-end">{{ paciente.created_at.strftime('%d/%m/%Y') }}</span>
+                            </li>
+                        </ul>
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Dados como Nome, CPF e CNS são críticos e só podem ser alterados pela recepção da UBS.
+                        </div>
+                    </div>
+
+                    <!-- Coluna 2: Informações de Contato (Editáveis) -->
+                    <div class="col-md-6">
+                        <h5 class="text-success mb-3">Informações de Contato (Editáveis)</h5>
+                        
+                        <div class="mb-3">
+                            <label for="telefone" class="form-label">
+                                <i class="bi bi-telephone me-2"></i>
+                                Telefone
+                            </label>
+                            <input type="text" class="form-control" id="telefone" name="telefone" 
+                                   value="{{ paciente.telefone if paciente.telefone else '' }}" 
+                                   placeholder="(XX) XXXXX-XXXX">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope me-2"></i>
+                                E-mail
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ paciente.email if paciente.email else '' }}" 
+                                   placeholder="seu.email@exemplo.com">
+                            <small class="form-text text-muted">O e-mail é opcional, mas recomendado para contato.</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-save me-2"></i>
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer text-muted text-center">
+            <small>
+                <i class="bi bi-info-circle me-1"></i>
+                Última atualização: {{ paciente.updated_at.strftime('%d/%m/%Y %H:%M') if paciente.updated_at else 'N/A' }}
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Login - UBS Digital{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="card">
+            <div class="card-body">
+                <!-- Logo e Título -->
+                <div class="login-logo">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="UBS Digital">
+                    <h2>UBS Digital</h2>
+                    <p class="text-muted">Sistema de Gestão de Saúde</p>
+                </div>
+
+                <!-- Tabs de Navegação -->
+                <ul class="nav nav-tabs nav-fill mb-4" id="loginTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="paciente-tab" data-bs-toggle="tab" 
+                                data-bs-target="#paciente-content" type="button" role="tab">
+                            <i class="bi bi-person-fill me-2"></i>
+                            Paciente
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="recepcionista-tab" data-bs-toggle="tab" 
+                                data-bs-target="#recepcionista-content" type="button" role="tab">
+                            <i class="bi bi-person-badge-fill me-2"></i>
+                            Recepcionista
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Conteúdo das Tabs -->
+                <div class="tab-content" id="loginTabContent">
+                    <!-- Tab Paciente -->
+                    <div class="tab-pane fade show active" id="paciente-content" role="tabpanel">
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <input type="hidden" name="tipo" value="paciente">
+                            
+                            <div class="mb-3">
+                                <label for="cpf" class="form-label">
+                                    <i class="bi bi-card-text me-1"></i>CPF
+                                </label>
+                                <input type="text" class="form-control" id="cpf" name="usuario" 
+                                       placeholder="000.000.000-00" required autofocus>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="senha-paciente" class="form-label">
+                                    <i class="bi bi-lock-fill me-1"></i>Senha
+                                </label>
+                                <input type="password" class="form-control" id="senha-paciente" 
+                                       name="senha" placeholder="Digite sua senha" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                Entrar como Paciente
+                            </button>
+                        </form>
+
+                        <div class="mt-4 text-center">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Credenciais fornecidas pela recepção
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Tab Recepcionista -->
+                    <div class="tab-pane fade" id="recepcionista-content" role="tabpanel">
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <input type="hidden" name="tipo" value="recepcionista">
+                            
+                            <div class="mb-3">
+                                <label for="login" class="form-label">
+                                    <i class="bi bi-person-circle me-1"></i>Login
+                                </label>
+                                <input type="text" class="form-control" id="login" name="usuario" 
+                                       placeholder="Digite seu login" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="senha-recep" class="form-label">
+                                    <i class="bi bi-lock-fill me-1"></i>Senha
+                                </label>
+                                <input type="password" class="form-control" id="senha-recep" 
+                                       name="senha" placeholder="Digite sua senha" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                Entrar como Recepcionista
+                            </button>
+                        </form>
+
+                        <div class="mt-4 text-center">
+                            <small class="text-muted">
+                                <i class="bi bi-shield-lock me-1"></i>
+                                Acesso restrito a funcionários autorizados
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações Adicionais -->
+        <div class="text-center mt-4">
+            <p class="text-white mb-1">
+                <i class="bi bi-headset me-2"></i>
+                Precisa de ajuda? Entre em contato com o suporte
+            </p>
+            <small class="text-white opacity-75">
+                Sistema desenvolvido para otimizar o atendimento na UBS
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}{% endblock %}

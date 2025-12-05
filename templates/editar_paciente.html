@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Paciente - UBS Digital{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="dashboard-header text-center">
+        <div class="container">
+            <h2><i class="bi bi-person-gear me-2"></i>Editar Paciente</h2>
+            <p>Atualize os dados cadastrais do paciente</p>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <a href="{{ url_for('dashboard_recepcionista') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Voltar ao Painel
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-pencil-square me-2"></i> Formulário de Edição
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('editar_paciente', paciente_id=paciente.id) }}" method="POST">
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">Dados Pessoais</h5>
+
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">
+                                <i class="bi bi-person me-1"></i> Nome Completo
+                            </label>
+                            <input type="text" class="form-control" id="nome" name="nome" 
+                                   value="{{ paciente.nome }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cpf" class="form-label">
+                                <i class="bi bi-card-text me-1"></i> CPF
+                            </label>
+                            <input type="text" class="form-control" id="cpf" name="cpf" 
+                                   value="{{ paciente.cpf }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="data_nascimento" class="form-label">
+                                <i class="bi bi-calendar me-1"></i> Data de Nascimento
+                            </label>
+                            <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" 
+                                   value="{{ paciente.data_nascimento }}" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">Contato e Documentos</h5>
+
+                        <div class="mb-3">
+                            <label for="cns" class="form-label">
+                                <i class="bi bi-hospital me-1"></i> Cartão SUS (CNS)
+                            </label>
+                            <input type="text" class="form-control" id="cns" name="cns" 
+                                   value="{{ paciente.cns }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telefone" class="form-label">
+                                <i class="bi bi-telephone me-1"></i> Telefone
+                            </label>
+                            <input type="text" class="form-control" id="telefone" name="telefone" 
+                                   value="{{ paciente.telefone }}">
+                        </div>
+                        
+                        </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <hr>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ url_for('dashboard_recepcionista') }}" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i> Salvar Alterações
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

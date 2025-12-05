@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Paciente - UBS Digital{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Cabeçalho do Dashboard -->
+    <div class="dashboard-header text-center">
+        <div class="container">
+            <h2>
+                <i class="bi bi-person-circle me-2"></i>
+                Bem-vindo(a), {{ session.user_name }}!
+            </h2>
+            <p>Gerencie suas consultas e acompanhe seu histórico médico</p>
+        </div>
+    </div>
+
+    <!-- Navegação por Tabs -->
+    <ul class="nav nav-tabs nav-fill mb-4" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="agendar-tab" data-bs-toggle="tab" 
+                    data-bs-target="#agendar-section" type="button" role="tab">
+                <i class="bi bi-calendar-plus me-2"></i>
+                Agendar Consulta
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="consultas-tab" data-bs-toggle="tab" 
+                    data-bs-target="#consultas-section" type="button" role="tab">
+                <i class="bi bi-calendar-check me-2"></i>
+                Minhas Consultas
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="historico-tab" data-bs-toggle="tab" 
+                    data-bs-target="#historico-section" type="button" role="tab">
+                <i class="bi bi-clock-history me-2"></i>
+                Histórico
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" href="{{ url_for('perfil_paciente') }}">
+                <i class="bi bi-person-vcard me-2"></i>
+                Meu Perfil
+            </a>
+        </li>
+    </ul>
+
+    <!-- Conteúdo das Tabs -->
+    <div class="tab-content" id="dashboardTabContent">
+        <!-- Seção: Agendar Nova Consulta -->
+        <div class="tab-pane fade show active" id="agendar-section" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-calendar-plus me-2"></i>
+                            Agendar Nova Consulta
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ url_for('agendar_consulta') }}">
+                                <div class="mb-3">
+                                    <label for="medico" class="form-label">
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        Escolha o Médico
+                                    </label>
+                                    <select name="medico_id" id="medico" class="form-select" required>
+                                        <option value="">-- Selecione um médico --</option>
+                                        {% for medico in medicos %}
+                                        <option value="{{ medico.id }}">
+                                            {{ medico.nome }} - {{ medico.especialidade }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="data_hora" class="form-label">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        Data e Hora
+                                    </label>
+                                    <input type="datetime-local" name="data_hora" id="data_hora" 
+                                           class="form-control" required>
+                                    <small class="form-text">Selecione uma data e hora futura</small>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Confirmar Agendamento
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-people me-2"></i>
+                            Médicos Disponíveis
+                        </div>
+                        <div class="card-body">
+                            {% if medicos %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Especialidade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for medico in medicos %}
+                                        <tr>
+                                            <td>
+                                                <i class="bi bi-person-fill text-primary me-2"></i>
+                                                {{ medico.nome }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ medico.especialidade }}</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="no-data">
+                                <i class="bi bi-inbox"></i>
+                                <p>Nenhum médico disponível no momento</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Consultas Agendadas -->
+        <div class="tab-pane fade" id="consultas-section" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-calendar-check me-2"></i>
+                    Minhas Consultas Agendadas
+                </div>
+                <div class="card-body">
+                    {% if consultas %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        Data/Hora
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        Médico
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-heart-pulse me-1"></i>
+                                        Especialidade
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Status
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-gear me-1"></i>
+                                        Ações
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consulta in consultas %}
+                                <tr class="status-row-{{ consulta.status.lower() }}">
+                                    <td>
+                                        <strong>{{ consulta.data_hora.strftime('%d/%m/%Y') }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ consulta.data_hora.strftime('%H:%M') }}</small>
+                                    </td>
+                                    <td>{{ consulta.medico.nome }}</td>
+                                    <td>{{ consulta.medico.especialidade }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ consulta.status.lower() }}">
+                                            {{ consulta.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('cancelar_consulta', consulta_id=consulta.id) }}" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Tem certeza que deseja cancelar esta consulta? O cancelamento deve ser feito com no mínimo 24 horas de antecedência.')"
+                                           title="Cancelar Consulta">
+                                            <i class="bi bi-x-circle me-1"></i>
+                                            Cancelar
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="no-data">
+                        <i class="bi bi-calendar-x"></i>
+                        <p>Você não possui consultas agendadas no momento</p>
+                        <a href="#agendar-section" data-bs-toggle="tab" data-bs-target="#agendar-section" 
+                           class="btn btn-primary mt-3">
+                            <i class="bi bi-calendar-plus me-2"></i>
+                            Agendar Consulta
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Histórico -->
+        <div class="tab-pane fade" id="historico-section" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Histórico de Consultas
+                </div>
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-medical" style="font-size: 3rem; color: var(--primary-blue);"></i>
+                    <h5 class="mt-3 mb-3">Acesse seu Histórico Completo</h5>
+                    <p class="text-muted mb-4">
+                        Visualize todas as suas consultas passadas e acompanhe seu histórico médico
+                    </p>
+                    <a href="{{ url_for('historico_paciente') }}" class="btn btn-info">
+                        <i class="bi bi-eye me-2"></i>
+                        Ver Histórico Completo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
