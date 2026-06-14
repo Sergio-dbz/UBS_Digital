@@ -67,6 +67,19 @@ class Medico(db.Model):
     consultas = db.relationship('Consulta', backref='medico', lazy=True)
 
 
+class Historico(db.Model):
+    """Modelo para a tabela 'historico'"""
+    __tablename__ = 'historico'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    consulta_id = db.Column(db.Integer, db.ForeignKey('consultas.id'), nullable=False)
+    status_anterior = db.Column(db.String(50))
+    status_novo = db.Column(db.String(50), nullable=False)
+    data_alteracao = db.Column(db.DateTime, default=datetime.utcnow)
+    recepcionista_id = db.Column(db.Integer, db.ForeignKey('recepcionistas.id'), nullable=True) # Quem fez a alteração
+    
+    consulta = db.relationship('Consulta', backref='historico_status', lazy=True)
+
 class Consulta(db.Model):
     """Modelo para a tabela 'consultas'"""
     __tablename__ = 'consultas'
@@ -79,6 +92,8 @@ class Consulta(db.Model):
     observacoes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relacionamento com histórico (backref já definido em Historico)
 
 
 # =====================================================
@@ -417,7 +432,11 @@ def editar_paciente(paciente_id):
             paciente.cpf = request.form['cpf']
             
             # Tratamento da data
-            paciente.data_nascimento = request.form['data_nascimento']
+            data_nascimento_str = request.form['data_nascimento']
+            if data_nascimento_str:
+                paciente.data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
+            else:
+                paciente.data_nascimento = None
             
             paciente.cns = request.form['cns']
             paciente.telefone = request.form['telefone']
@@ -445,13 +464,25 @@ def atualizar_status_consulta(consulta_id, novo_status):
     
     try:
         consulta = Consulta.query.get_or_404(consulta_id)
+        status_anterior = consulta.status
         
         # Validar status
         if novo_status not in ['Realizada', 'Faltou']:
             flash('Status inválido!', 'error')
             return redirect(url_for('dashboard_recepcionista'))
         
+        # 1. Atualizar o status da consulta
         consulta.status = novo_status
+        
+        # 2. Registrar a alteração no histórico (NOVA FUNCIONALIDADE)
+        novo_registro = Historico(
+            consulta_id=consulta.id,
+            status_anterior=status_anterior,
+            status_novo=novo_status,
+            recepcionista_id=session.get('user_id') # ID do recepcionista logado
+        )
+        db.session.add(novo_registro)
+        
         db.session.commit()
         
         flash(f'Status atualizado para "{novo_status}"!', 'success')
