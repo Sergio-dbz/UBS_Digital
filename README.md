@@ -49,9 +49,6 @@ Este sistema possui dois front-ends distintos que compartilham o mesmo banco de 
 - **JavaScript (Vanilla)** (Interatividade)
 - **Jinja2** (Template Engine)
 
-## 📁 Estrutura do Projeto
-
-```
 ubs_system/
 ├── app.py                          # Aplicação principal Flask
 ├── config.py                       # Configurações do sistema
@@ -72,6 +69,9 @@ ubs_system/
     │   └── style.css              # CSS customizado Medical Blue
     └── img/
         └── logo.png               # Logo UBS Digital
+```
+
+
 ```
 
 ## 🚀 Instalação e Configuração
@@ -307,3 +307,6 @@ Este projeto é de código aberto e está disponível para uso educacional.
 🎨 **Design System**: Medical Blue  
 🏥 **Branding**: UBS Digital  
 💻 **Stack**: Python + Flask + MySQL + Bootstrap 5
+=======
+# UBS_Digital
+>>>>>>> 10c4994e2874420bf4bd4c0c88ba94e368cd0ee0

@@ -444,6 +444,15 @@ body {
 }
 
 /* =====================================================
+   LISTA DE PACIENTES
+   ===================================================== */
+.patient-phone-cell,
+.patient-cpf-cell {
+    white-space: nowrap;
+    min-width: 8.5rem;
+}
+
+/* =====================================================
    BADGES DE STATUS
    ===================================================== */
 .badge {
@@ -473,6 +482,16 @@ body {
 /* =====================================================
    ALERTAS PROFISSIONAIS
    ===================================================== */
+.flash-message {
+    border: none;
+    border-radius: 0.75rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary-blue);
+    box-shadow: var(--shadow-sm);
+    font-weight: 500;
+}
+
 .alert {
     border: none;
     border-radius: 0.75rem;

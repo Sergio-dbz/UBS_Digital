@@ -5,6 +5,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
 
 try:
@@ -104,6 +105,29 @@ class Consulta(db.Model):
 # ROTAS GERAIS
 # =====================================================
 
+def mensagem_erro_padronizada(error):
+    """Retorna uma mensagem amigável para erros de integridade do banco."""
+    texto = str(error).lower()
+
+    if 'duplicate entry' in texto and 'cpf' in texto:
+        return 'Este CPF já está cadastrado para outro paciente.'
+    if 'duplicate entry' in texto and 'cns' in texto:
+        return 'Este CNS já está cadastrado para outro paciente.'
+    if 'duplicate entry' in texto and 'email' in texto:
+        return 'Este e-mail já está cadastrado para outro usuário.'
+
+    return 'Não foi possível concluir a operação. Verifique os dados informados e tente novamente.'
+
+
+def validar_telefone(telefone):
+    """Valida se o telefone está vazio ou possui um número completo."""
+    if telefone is None:
+        return False
+
+    telefone_limpo = ''.join(caracter for caracter in telefone if caracter.isdigit())
+    return telefone_limpo == '' or len(telefone_limpo) in (10, 11)
+
+
 @app.route('/')
 def index():
     """Página inicial - Redireciona para login"""
@@ -128,7 +152,11 @@ def login():
         
         if tipo == 'paciente':
             # Login do paciente usando CPF
-            paciente = Paciente.query.filter_by(cpf=usuario, senha=senha).first()
+            cpf_limpo = usuario.replace('.', '').replace('-', '').strip() if usuario else ''
+            paciente = Paciente.query.filter_by(cpf=cpf_limpo, senha=senha).first()
+            
+            if not paciente:
+                paciente = Paciente.query.filter_by(cpf=usuario, senha=senha).first()
             
             if paciente:
                 session['user_id'] = paciente.id
@@ -404,17 +432,23 @@ def cadastrar_paciente():
         return redirect(url_for('login'))
     
     nome = request.form.get('nome')
-    cpf = request.form.get('cpf')
+    cpf = request.form.get('cpf', '').replace('.', '').replace('-', '')
     senha = request.form.get('senha')
     cns = request.form.get('cns')  # Cartão SUS (obrigatório)
     telefone = request.form.get('telefone')
     data_nascimento_str = request.form.get('data_nascimento')
+
+    if not validar_telefone(telefone):
+        flash('O telefone deve estar vazio ou conter um número completo com 10 ou 11 dígitos.', 'error')
+        return redirect(url_for('dashboard_recepcionista'))
     
     try:
         # Converter data de nascimento
         data_nascimento = None
         if data_nascimento_str:
             data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
+
+        telefone_limpo = ''.join(caracter for caracter in (telefone or '') if caracter.isdigit())
         
         # Criar novo paciente
         novo_paciente = Paciente(
@@ -422,7 +456,7 @@ def cadastrar_paciente():
             cpf=cpf,
             senha=senha,
             cns=cns,
-            telefone=telefone,
+            telefone=telefone_limpo or None,
             data_nascimento=data_nascimento
         )
         
@@ -430,9 +464,12 @@ def cadastrar_paciente():
         db.session.commit()
         
         flash(f'Paciente {nome} cadastrado com sucesso!', 'success')
+    except IntegrityError as e:
+        db.session.rollback()
+        flash(mensagem_erro_padronizada(e), 'error')
     except Exception as e:
         db.session.rollback()
-        flash(f'Erro ao cadastrar paciente: {str(e)}', 'error')
+        flash('Não foi possível concluir o cadastro. Verifique os dados informados.', 'error')
     
     return redirect(url_for('dashboard_recepcionista'))
 
@@ -446,7 +483,7 @@ def editar_paciente(paciente_id):
         try:
             # Atualiza apenas os campos permitidos
             paciente.nome = request.form['nome']
-            paciente.cpf = request.form['cpf']
+            paciente.cpf = request.form.get('cpf', '').replace('.', '').replace('-', '')
             
             # Tratamento da data
             data_nascimento_str = request.form['data_nascimento']
@@ -462,9 +499,13 @@ def editar_paciente(paciente_id):
             flash('Paciente atualizado com sucesso!', 'success')
             return redirect(url_for('dashboard_recepcionista'))
             
+        except IntegrityError as e:
+            db.session.rollback()
+            flash(mensagem_erro_padronizada(e), 'error')
+            return redirect(url_for('editar_paciente', paciente_id=paciente.id))
         except Exception as e:
             db.session.rollback()
-            flash(f'Erro ao atualizar: {str(e)}', 'error')
+            flash('Não foi possível atualizar o paciente. Verifique os dados informados.', 'error')
             return redirect(url_for('editar_paciente', paciente_id=paciente.id))
 
     return render_template('editar_paciente.html', paciente=paciente)

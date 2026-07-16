@@ -104,18 +104,22 @@
                                     <td>
                                         {% if consulta.status == 'Agendada' %}
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="{{ url_for('atualizar_status_consulta', consulta_id=consulta.id, novo_status='Realizada') }}"
-                                               class="btn btn-success"
-                                               onclick="return confirm('Deseja confirmar a presença de {{ consulta.paciente.nome }} para a consulta de {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}?')"
-                                               title="Marcar como Realizada">
+                                            <button type="button" class="btn btn-success receptionist-confirm-btn"
+                                                    data-consulta-id="{{ consulta.id }}"
+                                                    data-consulta-data="{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}"
+                                                    data-paciente-nome="{{ consulta.paciente.nome }}"
+                                                    data-action="Realizada"
+                                                    title="Marcar como Realizada">
                                                 <i class="bi bi-check-circle"></i>
-                                            </a>
-                                            <a href="{{ url_for('atualizar_status_consulta', consulta_id=consulta.id, novo_status='Faltou') }}"
-                                               class="btn btn-danger"
-                                               onclick="return confirm('Deseja confirmar a ausência de {{ consulta.paciente.nome }} para a consulta de {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}?')"
-                                               title="Marcar como Faltou">
+                                            </button>
+                                            <button type="button" class="btn btn-danger receptionist-cancel-btn"
+                                                    data-consulta-id="{{ consulta.id }}"
+                                                    data-consulta-data="{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}"
+                                                    data-paciente-nome="{{ consulta.paciente.nome }}"
+                                                    data-action="Faltou"
+                                                    title="Marcar como Faltou">
                                                 <i class="bi bi-x-circle"></i>
-                                            </a>
+                                            </button>
                                         </div>
                                         {% else %}
                                         <span class="text-muted">
@@ -165,7 +169,7 @@
                                             CPF *
                                         </label>
                                         <input type="text" name="cpf" id="cpf" class="form-control" 
-                                               placeholder="000.000.000-00" required>
+                                               placeholder="000.000.000-00" maxlength="14" required>
                                     </div>
                                 </div>
 
@@ -185,8 +189,13 @@
                                             <i class="bi bi-lock me-1"></i>
                                             Senha de Acesso *
                                         </label>
-                                        <input type="password" name="senha" id="senha" class="form-control" 
-                                               placeholder="Senha para login do paciente" required>
+                                        <div class="password-input-wrapper">
+                                            <input type="password" name="senha" id="senha" class="form-control" 
+                                                   placeholder="Senha para login do paciente" required>
+                                            <button type="button" class="password-toggle" data-target="senha" aria-label="Mostrar senha">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -197,7 +206,8 @@
                                             Telefone
                                         </label>
                                         <input type="text" name="telefone" id="telefone" class="form-control" 
-                                               placeholder="(00) 00000-0000">
+                                               placeholder="(00) 00000-0000" maxlength="15" >
+                                        <small class="form-text">Deixe em branco ou informe um telefone completo com 10 ou 11 dígitos.</small>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
@@ -215,7 +225,7 @@
                                     <strong>Importante:</strong> Após o cadastro, forneça o CPF e a senha ao paciente para que ele possa acessar o sistema.
                                 </div>
 
-                                <button type="submit" class="btn btn-primary w-100 mt-3">
+                                <button type="button" id="openPatientRegisterModalBtn" class="btn btn-primary w-100 mt-3">
                                     <i class="bi bi-check-circle me-2"></i>
                                     Cadastrar Paciente
                                 </button>
@@ -271,11 +281,11 @@
                                 <tr>
                                     <td><strong>#{{ paciente.id }}</strong></td>
                                     <td>{{ paciente.nome }}</td>
-                                    <td>{{ paciente.cpf }}</td>
+                                    <td class="patient-cpf-cell">{{ paciente.cpf[:3] }}.{{ paciente.cpf[3:6] }}.{{ paciente.cpf[6:9] }}-{{ paciente.cpf[9:11] if paciente.cpf|length >= 11 else paciente.cpf }}</td>
                                     <td>
                                         <span class="badge bg-info text-dark">{{ paciente.cns }}</span>
                                     </td>
-                                    <td>{{ paciente.telefone or '-' }}</td>
+                                    <td class="patient-phone-cell">{{ paciente.telefone or '-' }}</td>
                                     <td>
                                         {{ paciente.data_nascimento.strftime('%d/%m/%Y') if paciente.data_nascimento else '-' }}
                                     </td>
@@ -308,4 +318,200 @@
     </div>
 </div>
 
+<div class="modal fade" id="patientRegisterModal" tabindex="-1" aria-labelledby="patientRegisterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-cancel-container">
+            <div class="modal-body text-center p-4">
+                <div class="schedule-icon mb-3">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+                <h4 class="modal-title mb-3" id="patientRegisterModalLabel">Confirmar cadastro do paciente?</h4>
+                <p class="modal-text mb-3">
+                    Você está prestes a cadastrar este paciente no sistema.
+                </p>
+                <p class="modal-text mb-4">
+                    Verifique os dados antes de confirmar o cadastro.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-schedule-success" id="confirmPatientRegisterBtn">Confirmar cadastro</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="receptionistStatusModal" tabindex="-1" aria-labelledby="receptionistStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-cancel-container">
+            <div class="modal-body text-center p-4">
+                <div class="schedule-icon mb-3" id="receptionistStatusIcon">
+                    <i class="bi bi-calendar2-check-fill"></i>
+                </div>
+                <h4 class="modal-title mb-3" id="receptionistStatusModalLabel">Atualizar status da consulta?</h4>
+                <p class="modal-text mb-3" id="receptionistStatusMessage">
+                    Confirme a atualização do status desta consulta.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <a id="confirmReceptionistStatusLink" href="#" class="btn btn-schedule-success">Confirmar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cpfInput = document.getElementById('cpf');
+    const telefoneInput = document.getElementById('telefone');
+    const form = document.querySelector("form[action='{{ url_for('cadastrar_paciente') }}']");
+    const passwordToggleButtons = document.querySelectorAll('.password-toggle');
+    const openPatientRegisterModalBtn = document.getElementById('openPatientRegisterModalBtn');
+    const confirmPatientRegisterBtn = document.getElementById('confirmPatientRegisterBtn');
+    const patientRegisterModal = new bootstrap.Modal(document.getElementById('patientRegisterModal'));
+
+    passwordToggleButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+
+            if (input && icon) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'bi bi-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'bi bi-eye';
+                }
+            }
+        });
+    });
+
+    if (openPatientRegisterModalBtn && form) {
+        openPatientRegisterModalBtn.addEventListener('click', function () {
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            patientRegisterModal.show();
+        });
+    }
+
+    if (confirmPatientRegisterBtn && form) {
+        confirmPatientRegisterBtn.addEventListener('click', function () {
+            patientRegisterModal.hide();
+            form.submit();
+        });
+    }
+
+    if (cpfInput) {
+        cpfInput.addEventListener('input', function () {
+            let value = this.value.replace(/\D/g, '').slice(0, 11);
+            if (value.length > 9) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+            } else if (value.length > 6) {
+                value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+            } else if (value.length > 3) {
+                value = value.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+            }
+            this.value = value;
+        });
+    }
+
+    if (telefoneInput) {
+        telefoneInput.addEventListener('input', function () {
+            const digits = this.value.replace(/\D/g, '').slice(0, 11);
+            let formatted = digits;
+
+            if (digits.length === 10) {
+                formatted = '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6, 10);
+            } else if (digits.length === 11) {
+                formatted = '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7, 11);
+            }
+
+            this.value = formatted;
+        });
+    }
+
+    if (form && cpfInput) {
+        form.addEventListener('submit', function (event) {
+            const rawCpf = cpfInput.value.replace(/\D/g, '');
+            if (rawCpf.length !== 11) {
+                event.preventDefault();
+                alert('O CPF deve conter exatamente 11 números.');
+                cpfInput.focus();
+                return;
+            }
+            cpfInput.value = rawCpf;
+
+            if (telefoneInput) {
+                const rawTelefone = telefoneInput.value.replace(/\D/g, '');
+                const isEmpty = rawTelefone === '';
+                const isComplete = rawTelefone.length === 10 || rawTelefone.length === 11;
+
+                if (!isEmpty && !isComplete) {
+                    event.preventDefault();
+                    alert('O telefone deve estar vazio ou conter um número completo com 10 ou 11 dígitos.');
+                    telefoneInput.focus();
+                    return;
+                }
+
+                telefoneInput.value = rawTelefone;
+            }
+        });
+    }
+
+    const statusModal = new bootstrap.Modal(document.getElementById('receptionistStatusModal'));
+    const confirmButtons = document.querySelectorAll('.receptionist-confirm-btn');
+    const cancelButtons = document.querySelectorAll('.receptionist-cancel-btn');
+    const statusMessage = document.getElementById('receptionistStatusMessage');
+    const statusIcon = document.getElementById('receptionistStatusIcon');
+    const confirmLink = document.getElementById('confirmReceptionistStatusLink');
+
+    function openStatusModal(button) {
+        const consultaId = button.getAttribute('data-consulta-id');
+        const consultaData = button.getAttribute('data-consulta-data');
+        const pacienteNome = button.getAttribute('data-paciente-nome');
+        const action = button.getAttribute('data-action');
+
+        if (statusMessage) {
+            if (action === 'Realizada') {
+                statusMessage.innerHTML = 'Você está prestes a confirmar a presença de <strong>' + pacienteNome + '</strong> na consulta agendada para <strong>' + consultaData + '</strong>.';
+            } else {
+                statusMessage.innerHTML = 'Você está prestes a confirmar a ausência de <strong>' + pacienteNome + '</strong> na consulta agendada para <strong>' + consultaData + '</strong>.';
+            }
+        }
+
+        if (statusIcon) {
+            const iconClass = action === 'Realizada' ? 'bi bi-calendar2-check-fill' : 'bi bi-exclamation-triangle-fill';
+            statusIcon.innerHTML = '<i class="' + iconClass + '"></i>';
+            statusIcon.className = 'mb-3 ' + (action === 'Realizada' ? 'schedule-icon' : 'cancel-icon');
+        }
+
+        if (confirmLink) {
+            confirmLink.href = '/recepcionista/atualizar_status/' + consultaId + '/' + action;
+            confirmLink.className = 'btn ' + (action === 'Realizada' ? 'btn-schedule-success' : 'btn-cancel-danger');
+            confirmLink.textContent = action === 'Realizada' ? 'Confirmar presença' : 'Confirmar ausência';
+        }
+
+        statusModal.show();
+    }
+
+    confirmButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            openStatusModal(this);
+        });
+    });
+
+    cancelButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            openStatusModal(this);
+        });
+    });
+});
+</script>
 {% endblock %}
