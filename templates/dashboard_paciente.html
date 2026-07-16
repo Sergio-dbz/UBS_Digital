@@ -16,35 +16,32 @@
     </div>
 
     <!-- Navegação por Tabs -->
-    <ul class="nav nav-tabs nav-fill mb-4" id="dashboardTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="agendar-tab" data-bs-toggle="tab" 
-                    data-bs-target="#agendar-section" type="button" role="tab">
-                <i class="bi bi-calendar-plus me-2"></i>
-                Agendar Consulta
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="consultas-tab" data-bs-toggle="tab" 
-                    data-bs-target="#consultas-section" type="button" role="tab">
-                <i class="bi bi-calendar-check me-2"></i>
-                Minhas Consultas
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="historico-tab" data-bs-toggle="tab" 
-                    data-bs-target="#historico-section" type="button" role="tab">
-                <i class="bi bi-clock-history me-2"></i>
-                Histórico
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" href="{{ url_for('perfil_paciente') }}">
-                <i class="bi bi-person-vcard me-2"></i>
-                Meu Perfil
-            </a>
-        </li>
-    </ul>
+    <div class="dashboard-tabs-wrapper mb-4">
+        <ul class="nav nav-tabs nav-fill" id="dashboardTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="agendar-tab" data-bs-toggle="tab" 
+                        data-bs-target="#agendar-section" type="button" role="tab">
+                    <i class="bi bi-calendar-plus me-2"></i>
+                    Agendar Consulta
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="consultas-tab" data-bs-toggle="tab" 
+                        data-bs-target="#consultas-section" type="button" role="tab">
+                    <i class="bi bi-calendar-check me-2"></i>
+                    Minhas Consultas
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="historico-tab" data-bs-toggle="tab" 
+                        data-bs-target="#historico-section" type="button" role="tab">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Histórico
+                </button>
+            </li>
+        </ul>
+
+    </div>
 
     <!-- Conteúdo das Tabs -->
     <div class="tab-content" id="dashboardTabContent">
@@ -58,7 +55,7 @@
                             Agendar Nova Consulta
                         </div>
                         <div class="card-body">
-                            <form method="POST" action="{{ url_for('agendar_consulta') }}">
+                            <form id="agendarForm" method="POST" action="{{ url_for('agendar_consulta') }}">
                                 <div class="mb-3">
                                     <label for="medico" class="form-label">
                                         <i class="bi bi-person-badge me-1"></i>
@@ -84,7 +81,7 @@
                                     <small class="form-text">Selecione uma data e hora futura</small>
                                 </div>
 
-                                <button type="submit" class="btn btn-success w-100">
+                                <button type="button" class="btn btn-success w-100 schedule-confirm-btn">
                                     <i class="bi bi-check-circle me-2"></i>
                                     Confirmar Agendamento
                                 </button>
@@ -187,13 +184,13 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="{{ url_for('cancelar_consulta', consulta_id=consulta.id) }}" 
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('Tem certeza que deseja cancelar esta consulta? O cancelamento deve ser feito com no mínimo 24 horas de antecedência.')"
-                                           title="Cancelar Consulta">
+                                        <button type="button" class="btn btn-sm btn-danger cancel-consulta-btn"
+                                                data-consulta-id="{{ consulta.id }}"
+                                                data-consulta-data="{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}"
+                                                title="Cancelar Consulta">
                                             <i class="bi bi-x-circle me-1"></i>
                                             Cancelar
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -223,7 +220,7 @@
                     Histórico de Consultas
                 </div>
                 <div class="card-body text-center">
-                    <i class="bi bi-file-earmark-medical" style="font-size: 3rem; color: var(--primary-blue);"></i>
+                    <i class="bi bi-file-earmark-medical dashboard-history-icon"></i>
                     <h5 class="mt-3 mb-3">Acesse seu Histórico Completo</h5>
                     <p class="text-muted mb-4">
                         Visualize todas as suas consultas passadas e acompanhe seu histórico médico
@@ -237,4 +234,96 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-cancel-container">
+            <div class="modal-body text-center p-4">
+                <div class="schedule-icon mb-3">
+                    <i class="bi bi-calendar2-check-fill"></i>
+                </div>
+                <h4 class="modal-title mb-3" id="scheduleModalLabel">Confirmar agendamento?</h4>
+                <p class="modal-text mb-3">
+                    Você está prestes a confirmar esta consulta para o horário selecionado.
+                </p>
+                <p class="modal-text mb-4">
+                    Verifique se a data, o horário e o médico estão corretos antes de continuar.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <button type="button" class="btn btn-schedule-success" id="confirmScheduleBtn">Confirmar agendamento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-cancel-container">
+            <div class="modal-body text-center p-4">
+                <div class="cancel-icon mb-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h4 class="modal-title mb-3" id="cancelModalLabel">Cancelar consulta?</h4>
+                <p class="modal-text mb-3">
+                    Você está prestes a cancelar a consulta agendada para <strong id="cancelConsultaData"></strong>.
+                </p>
+                <p class="modal-text mb-4">
+                    O cancelamento deve ser feito com no mínimo <strong>24 horas de antecedência</strong>.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <a id="confirmCancelLink" href="#" class="btn btn-cancel-danger">
+                        Confirmar cancelamento
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cancelModal = new bootstrap.Modal(document.getElementById('cancelModal'));
+    const scheduleModal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+    const cancelButtons = document.querySelectorAll('.cancel-consulta-btn');
+    const cancelData = document.getElementById('cancelConsultaData');
+    const confirmLink = document.getElementById('confirmCancelLink');
+    const scheduleButton = document.querySelector('.schedule-confirm-btn');
+    const confirmScheduleBtn = document.getElementById('confirmScheduleBtn');
+    const agendarForm = document.getElementById('agendarForm');
+
+    cancelButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            const consultaId = this.getAttribute('data-consulta-id');
+            const consultaData = this.getAttribute('data-consulta-data');
+
+            if (cancelData) {
+                cancelData.textContent = consultaData;
+            }
+
+            if (confirmLink) {
+                confirmLink.href = '/paciente/cancelar_consulta/' + consultaId;
+            }
+
+            cancelModal.show();
+        });
+    });
+
+    if (scheduleButton) {
+        scheduleButton.addEventListener('click', function () {
+            scheduleModal.show();
+        });
+    }
+
+    if (confirmScheduleBtn && agendarForm) {
+        confirmScheduleBtn.addEventListener('click', function () {
+            agendarForm.submit();
+        });
+    }
+});
+</script>
 {% endblock %}

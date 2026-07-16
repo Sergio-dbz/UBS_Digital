@@ -27,7 +27,7 @@ class Config:
     DB_NAME = os.environ.get('DB_NAME') or 'ubs_system'
     
     # String de conexão completa
-    SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI') or f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
     
     # Desabilitar rastreamento de modificações (economiza memória)
     SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -104,15 +104,15 @@
                                     <td>
                                         {% if consulta.status == 'Agendada' %}
                                         <div class="btn-group btn-group-sm" role="group">
-                                            <a href="{{ url_for('atualizar_status_consulta', consulta_id=consulta.id, novo_status='Realizada') }}" 
-                                               class="btn btn-success" 
-                                               onclick="return confirm('Confirmar que o paciente compareceu?')"
+                                            <a href="{{ url_for('atualizar_status_consulta', consulta_id=consulta.id, novo_status='Realizada') }}"
+                                               class="btn btn-success"
+                                               onclick="return confirm('Deseja confirmar a presença de {{ consulta.paciente.nome }} para a consulta de {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}?')"
                                                title="Marcar como Realizada">
                                                 <i class="bi bi-check-circle"></i>
                                             </a>
-                                            <a href="{{ url_for('atualizar_status_consulta', consulta_id=consulta.id, novo_status='Faltou') }}" 
-                                               class="btn btn-danger" 
-                                               onclick="return confirm('Confirmar que o paciente faltou?')"
+                                            <a href="{{ url_for('atualizar_status_consulta', consulta_id=consulta.id, novo_status='Faltou') }}"
+                                               class="btn btn-danger"
+                                               onclick="return confirm('Deseja confirmar a ausência de {{ consulta.paciente.nome }} para a consulta de {{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}?')"
                                                title="Marcar como Faltou">
                                                 <i class="bi bi-x-circle"></i>
                                             </a>
@@ -305,4 +305,7 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
 {% endblock %}

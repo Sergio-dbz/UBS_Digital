@@ -6,7 +6,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
-from config import Config
+
+try:
+    from .config import Config
+except ImportError:
+    from config import Config
 
 # =====================================================
 # INICIALIZAÇÃO DO FLASK E BANCO DE DADOS
@@ -67,6 +71,19 @@ class Medico(db.Model):
     consultas = db.relationship('Consulta', backref='medico', lazy=True)
 
 
+class Historico(db.Model):
+    """Modelo para a tabela 'historico'"""
+    __tablename__ = 'historico'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    consulta_id = db.Column(db.Integer, db.ForeignKey('consultas.id'), nullable=False)
+    status_anterior = db.Column(db.String(50))
+    status_novo = db.Column(db.String(50), nullable=False)
+    data_alteracao = db.Column(db.DateTime, default=datetime.utcnow)
+    recepcionista_id = db.Column(db.Integer, db.ForeignKey('recepcionistas.id'), nullable=True) # Quem fez a alteração
+    
+    consulta = db.relationship('Consulta', backref='historico_status', lazy=True)
+
 class Consulta(db.Model):
     """Modelo para a tabela 'consultas'"""
     __tablename__ = 'consultas'
@@ -79,6 +96,8 @@ class Consulta(db.Model):
     observacoes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relacionamento com histórico (backref já definido em Historico)
 
 
 # =====================================================
@@ -97,6 +116,11 @@ def login():
     Rota de login unificada.
     Identifica se é paciente ou recepcionista pelo tipo de credencial.
     """
+    if request.method == 'GET' and 'user_type' in session:
+        if session['user_type'] == 'paciente':
+            return redirect(url_for('dashboard_paciente'))
+        return redirect(url_for('dashboard_recepcionista'))
+
     if request.method == 'POST':
         usuario = request.form.get('usuario')
         senha = request.form.get('senha')
@@ -268,7 +292,7 @@ def agendar_consulta():
         flash('Acesso negado!', 'error')
         return redirect(url_for('login'))
     
-    medico_id = request.form.get('medico_id')
+    medico_id = int(request.form.get('medico_id'))
     data_hora_str = request.form.get('data_hora')
     
     try:
@@ -286,11 +310,19 @@ def agendar_consulta():
             return redirect(url_for('dashboard_paciente'))
         
         # 2. ERRO CRÍTICO (RN03): Choque de Horários - Verificar se o médico já está ocupado
+        data_hora_normalizada = data_hora.replace(second=0, microsecond=0)
         conflito_medico = Consulta.query.filter_by(
             medico_id=medico_id,
-            data_hora=data_hora,
             status='Agendada' # Apenas consultas agendadas contam como ocupação
-        ).first()
+        ).all()
+
+        conflito_medico = next(
+            (
+                consulta for consulta in conflito_medico
+                if consulta.data_hora and consulta.data_hora.replace(second=0, microsecond=0) == data_hora_normalizada
+            ),
+            None,
+        )
 
         if conflito_medico:
             # Busca o nome do médico para a mensagem de erro
@@ -417,7 +449,11 @@ def editar_paciente(paciente_id):
             paciente.cpf = request.form['cpf']
             
             # Tratamento da data
-            paciente.data_nascimento = request.form['data_nascimento']
+            data_nascimento_str = request.form['data_nascimento']
+            if data_nascimento_str:
+                paciente.data_nascimento = datetime.strptime(data_nascimento_str, '%Y-%m-%d').date()
+            else:
+                paciente.data_nascimento = None
             
             paciente.cns = request.form['cns']
             paciente.telefone = request.form['telefone']
@@ -445,13 +481,25 @@ def atualizar_status_consulta(consulta_id, novo_status):
     
     try:
         consulta = Consulta.query.get_or_404(consulta_id)
+        status_anterior = consulta.status
         
         # Validar status
         if novo_status not in ['Realizada', 'Faltou']:
             flash('Status inválido!', 'error')
             return redirect(url_for('dashboard_recepcionista'))
         
+        # 1. Atualizar o status da consulta
         consulta.status = novo_status
+        
+        # 2. Registrar a alteração no histórico (NOVA FUNCIONALIDADE)
+        novo_registro = Historico(
+            consulta_id=consulta.id,
+            status_anterior=status_anterior,
+            status_novo=novo_status,
+            recepcionista_id=session.get('user_id') # ID do recepcionista logado
+        )
+        db.session.add(novo_registro)
+        
         db.session.commit()
         
         flash(f'Status atualizado para "{novo_status}"!', 'success')

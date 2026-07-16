@@ -9,7 +9,7 @@
             <div class="card-body">
                 <!-- Logo e Título -->
                 <div class="login-logo">
-                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="UBS Digital">
+                    <img src="{{ url_for('static', filename='img/logo1.png') }}" alt="UBS Digital">
                     <h2>UBS Digital</h2>
                     <p class="text-muted">Sistema de Gestão de Saúde</p>
                 </div>
@@ -51,8 +51,14 @@
                                 <label for="senha-paciente" class="form-label">
                                     <i class="bi bi-lock-fill me-1"></i>Senha
                                 </label>
-                                <input type="password" class="form-control" id="senha-paciente" 
-                                       name="senha" placeholder="Digite sua senha" required>
+                                <div class="password-input-wrapper">
+                                    <input type="password" class="form-control" id="senha-paciente" 
+                                           name="senha" placeholder="Digite sua senha" required>
+                                    <button type="button" class="password-toggle" 
+                                            data-target="senha-paciente" aria-label="Mostrar senha">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100">
@@ -86,8 +92,14 @@
                                 <label for="senha-recep" class="form-label">
                                     <i class="bi bi-lock-fill me-1"></i>Senha
                                 </label>
-                                <input type="password" class="form-control" id="senha-recep" 
-                                       name="senha" placeholder="Digite sua senha" required>
+                                <div class="password-input-wrapper">
+                                    <input type="password" class="form-control" id="senha-recep" 
+                                           name="senha" placeholder="Digite sua senha" required>
+                                    <button type="button" class="password-toggle" 
+                                            data-target="senha-recep" aria-label="Mostrar senha">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100">
@@ -122,3 +134,27 @@
 {% endblock %}
 
 {% block extra_css %}{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.password-toggle').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+
+            if (!input || !icon) {
+                return;
+            }
+
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            icon.classList.toggle('bi-eye', !isPassword);
+            icon.classList.toggle('bi-eye-slash', isPassword);
+            this.setAttribute('aria-label', isPassword ? 'Ocultar senha' : 'Mostrar senha');
+        });
+    });
+});
+</script>
+{% endblock %}

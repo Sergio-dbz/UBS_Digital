@@ -13,12 +13,26 @@ Este sistema possui dois front-ends distintos que compartilham o mesmo banco de 
 
 ### Interface Corporativa Medical Blue
 
+- ✅ **Bootstrap 5** para responsividade e componentes modernos
+- ✅ **Bootstrap Icons** - Ícones profissionais (sem emojis)
+- ✅ **Paleta Medical Blue** - Identidade visual institucional
+- ✅ **Cards com sombras** - Design limpo e organizado
+- ✅ **Logo UBS Digital** - Branding profissional
+- ✅ **Tipografia Inter** - Fonte moderna do Google Fonts
+- ✅ **Totalmente responsivo** - Funciona em desktop, tablet e mobile
 
 ### Capturas de Tela
 
 **Login Profissional**
+- Card centralizado com logo
+- Tabs para Paciente/Recepcionista
+- Background gradient Medical Blue
 
 **Dashboard Moderno**
+- Navbar com logo e informações do usuário
+- Cards organizados com headers coloridos
+- Tabelas estilizadas com ícones
+- Badges de status coloridos
 
 ## 🛠️ Stack Tecnológica
 
@@ -28,12 +42,16 @@ Este sistema possui dois front-ends distintos que compartilham o mesmo banco de 
 - **SQLAlchemy** (ORM)
 
 ### Frontend
+- **Bootstrap 5.3.2** (Framework CSS)
 - **Bootstrap Icons 1.11.1** (Ícones)
 - **Google Fonts - Inter** (Tipografia)
 - **HTML5 + CSS3** (Markup)
 - **JavaScript (Vanilla)** (Interatividade)
 - **Jinja2** (Template Engine)
 
+## 📁 Estrutura do Projeto
+
+```
 ubs_system/
 ├── app.py                          # Aplicação principal Flask
 ├── config.py                       # Configurações do sistema
@@ -289,6 +307,3 @@ Este projeto é de código aberto e está disponível para uso educacional.
 🎨 **Design System**: Medical Blue  
 🏥 **Branding**: UBS Digital  
 💻 **Stack**: Python + Flask + MySQL + Bootstrap 5
-=======
-# UBS_Digital
->>>>>>> 10c4994e2874420bf4bd4c0c88ba94e368cd0ee0
