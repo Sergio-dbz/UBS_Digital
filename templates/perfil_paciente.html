@@ -1,113 +1,152 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Meu Perfil - UBS Digital{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <!-- Cabeçalho -->
-    <div class="dashboard-header text-center">
-        <div class="container">
-            <h2>
-                <i class="bi bi-person-vcard me-2"></i>
-                Meu Perfil
-            </h2>
-            <p>Visualize e atualize suas informações de contato</p>
-        </div>
-    </div>
-
-    <!-- Botão Voltar -->
-    <div class="mb-4">
-        <a href="{{ url_for('dashboard_paciente') }}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left me-2"></i>
-            Voltar ao Dashboard
+<div class="container mt-4 mb-5">
+    
+    <!-- Botão de Voltar -->
+    <div class="mb-3">
+        <a href="{{ url_for('dashboard_paciente') }}" class="btn btn-outline-secondary btn-sm fw-bold">
+            <i class="bi bi-arrow-left me-1"></i> Voltar ao Dashboard
         </a>
     </div>
 
-    <!-- Card de Perfil -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <i class="bi bi-person-fill me-2"></i>
-            Dados Cadastrais
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-person-lines-fill me-2"></i> Dados Cadastrais</h5>
         </div>
-        <div class="card-body">
-            <form method="POST" action="{{ url_for('atualizar_perfil_paciente') }}">
-                <div class="row">
-                    <!-- Coluna 1: Dados Pessoais (Não Editáveis) -->
-                    <div class="col-md-6">
-                        <h5 class="text-primary mb-3">Informações Pessoais </h5>
-                        <ul class="list-group list-group-flush mb-4">
-                            <li class="list-group-item">
-                                <strong><i class="bi bi-person me-2"></i>Nome Completo:</strong> 
-                                <span class="float-end">{{ paciente.nome }}</span>
-                            </li>
-                            <li class="list-group-item">
-                                <strong><i class="bi bi-credit-card me-2"></i>CPF:</strong> 
-                                <span class="float-end">{{ paciente.cpf }}</span>
-                            </li>
-                            <li class="list-group-item">
-                                <strong><i class="bi bi-hospital me-2"></i>Cartão SUS (CNS):</strong> 
-                                <span class="float-end text-success fw-bold">{{ paciente.cns }}</span>
-                            </li>
-                            <li class="list-group-item">
-                                <strong><i class="bi bi-calendar me-2"></i>Data de Nascimento:</strong> 
-                                <span class="float-end">
-                                    {% if paciente.data_nascimento %}
-                                        {{ paciente.data_nascimento.strftime('%d/%m/%Y') }}
-                                    {% else %}
-                                        Não informado
-                                    {% endif %}
-                                </span>
-                            </li>
-                            <li class="list-group-item">
-                                <strong><i class="bi bi-clock me-2"></i>Membro Desde:</strong> 
-                                <span class="float-end">{{ paciente.created_at.strftime('%d/%m/%Y') }}</span>
-                            </li>
-                        </ul>
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            Dados como Nome, CPF e CNS são críticos e só podem ser alterados pela recepção da UBS.
+        
+        <div class="card-body p-4">
+            <div class="row g-4">
+                
+                <!-- Coluna Esquerda: Informações Pessoais (Fixas) -->
+                <div class="col-md-6">
+                    <h5 class="mb-4 fw-bold border-bottom pb-2">Informações Pessoais</h5>
+                    
+                    <div class="dado-caixa">
+                        <div class="d-flex flex-column gap-3">
+                            <div>
+                                <span class="d-block dado-label mb-1">Nome Completo</span>
+                                <span class="d-block dado-valor">{{ paciente.nome }}</span>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <span class="d-block dado-label mb-1">CPF</span>
+                                    <span class="d-block dado-valor">{{ paciente.cpf }}</span>
+                                </div>
+                                <div class="col-sm-6 mt-3 mt-sm-0">
+                                    <span class="d-block dado-label mb-1">Cartão SUS (CNS)</span>
+                                    <span class="d-block dado-valor text-success cns-destaque fw-bold">{{ paciente.cns }}</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <span class="d-block dado-label mb-1">Data de Nascimento</span>
+                                <span class="d-block dado-valor">{{ paciente.data_nascimento.strftime('%d/%m/%Y') if paciente.data_nascimento else 'N/A' }}</span>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Coluna 2: Informações de Contato (Editáveis) -->
-                    <div class="col-md-6">
-                        <h5 class="text-success mb-3">Informações de Contato (Editáveis)</h5>
+                    
+                    <!-- Aviso (Sem estilo inline) -->
+                    <div class="alert alerta-dados mt-4 shadow-sm" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Atenção:</strong> Dados críticos (Nome, CPF e CNS) só podem ser alterados presencialmente na recepção.
+                    </div>
+                </div>
+                
+                <!-- Coluna Direita: Informações de Contato (Editáveis) -->
+                <div class="col-md-6 border-start-md">
+                    <h5 class="mb-4 fw-bold border-bottom pb-2">Informações de Contato</h5>
+                    
+                    <form id="formPerfil" action="{{ url_for('atualizar_perfil_paciente') }}" method="POST">
                         
+                        <!-- Campo Telefone (Sem estilo inline) -->
                         <div class="mb-3">
-                            <label for="telefone" class="form-label">
-                                <i class="bi bi-telephone me-2"></i>
-                                Telefone
-                            </label>
-                            <input type="text" class="form-control" id="telefone" name="telefone" 
+                            <label for="telefone" class="form-label fw-bold label-contato">Telefone / WhatsApp</label>
+                            <input type="tel" class="form-control" id="telefone" name="telefone" 
                                    value="{{ paciente.telefone if paciente.telefone else '' }}" 
-                                   placeholder="(XX) XXXXX-XXXX">
+                                   placeholder="Digite os 11 números"
+                                   maxlength="15"
+                                   oninput="mascaraTelefone(this)"
+                                   required>
                         </div>
-
+                        
+                        <!-- Campo E-mail (Sem estilo inline) -->
                         <div class="mb-4">
-                            <label for="email" class="form-label">
-                                <i class="bi bi-envelope me-2"></i>
-                                E-mail
-                            </label>
+                            <label for="email" class="form-label fw-bold label-contato">E-mail</label>
                             <input type="email" class="form-control" id="email" name="email" 
                                    value="{{ paciente.email if paciente.email else '' }}" 
                                    placeholder="seu.email@exemplo.com">
-                            <small class="form-text text-muted">O e-mail é opcional, mas recomendado para contato.</small>
                         </div>
-
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="bi bi-save me-2"></i>
-                            Salvar Alterações
+                        
+                        <!-- Botão que aciona a validação e o Modal -->
+                        <button type="button" class="btn btn-success w-100 fw-bold shadow-sm" onclick="validarEConfirmar()">
+                            <i class="bi bi-save me-2"></i> Salvar Alterações
                         </button>
-                    </div>
+                        
+                    </form>
                 </div>
-            </form>
-        </div>
-        <div class="card-footer text-muted text-center">
-            <small>
-                <i class="bi bi-info-circle me-1"></i>
-                Última atualização: {{ paciente.updated_at.strftime('%d/%m/%Y %H:%M') if paciente.updated_at else 'N/A' }}
-            </small>
+                
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Modal de Confirmação Padronizado -->
+<div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-primary" id="confirmSaveModalLabel">
+                    <i class="bi bi-question-circle-fill me-2"></i>Confirmar Atualização
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="mb-0 fs-6">Tem certeza que deseja salvar os novos dados de contato?</p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success fw-bold px-4" onclick="document.getElementById('formPerfil').submit();">
+                    <i class="bi bi-check-lg me-2"></i>Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function mascaraTelefone(input) {
+        let valor = input.value.replace(/\D/g, ''); 
+        if (valor.length > 11) valor = valor.slice(0, 11);
+        if (valor.length === 11) {
+            input.value = '(' + valor.substring(0, 2) + ') ' + valor.substring(2, 7) + '-' + valor.substring(7, 11);
+        } else {
+            input.value = valor; 
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const campoTelefone = document.getElementById('telefone');
+        if(campoTelefone && campoTelefone.value) {
+            let numeros = campoTelefone.value.replace(/\D/g, '');
+            campoTelefone.value = numeros;
+            mascaraTelefone(campoTelefone);
+        }
+    });
+
+    function validarEConfirmar() {
+        const form = document.getElementById('formPerfil');
+        if (form.checkValidity()) {
+            const modalConfirmacao = new bootstrap.Modal(document.getElementById('confirmSaveModal'));
+            modalConfirmacao.show();
+        } else {
+            form.reportValidity();
+        }
+    }
+</script>
 {% endblock %}

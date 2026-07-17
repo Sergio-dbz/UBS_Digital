@@ -36,7 +36,7 @@
                 <div class="tab-content" id="loginTabContent">
                     <!-- Tab Paciente -->
                     <div class="tab-pane fade show active" id="paciente-content" role="tabpanel">
-                        <form method="POST" action="{{ url_for('login') }}">
+                        <form method="POST" action="{{ url_for('login') }}" autocomplete="off">
                             <input type="hidden" name="tipo" value="paciente">
                             
                             <div class="mb-3">
@@ -77,7 +77,7 @@
 
                     <!-- Tab Recepcionista -->
                     <div class="tab-pane fade" id="recepcionista-content" role="tabpanel">
-                        <form method="POST" action="{{ url_for('login') }}">
+                        <form method="POST" action="{{ url_for('login') }}" autocomplete="off">
                             <input type="hidden" name="tipo" value="recepcionista">
                             
                             <div class="mb-3">

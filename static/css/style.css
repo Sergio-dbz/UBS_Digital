@@ -893,3 +893,69 @@ body.dark-theme .card-body h6 {
 body.dark-theme .form-text {
     color: #cbd5e1 !important; 
 }
+
+/* ==========================================================================
+   ESTILOS DO PERFIL DO PACIENTE (Ficha Cadastral)
+   ========================================================================== */
+
+.dado-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d; 
+}
+
+.dado-valor {
+    font-size: 1rem; 
+    font-weight: 600;
+    color: #212529; 
+}
+
+/* Caixa para agrupar as informações no Tema Claro */
+.dado-caixa {
+    background-color: #f8f9fa; 
+    border: 1px solid #e9ecef; 
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+/* Força as cores sólidas e fundo da caixa no Tema Escuro */
+body.dark-theme .dado-caixa {
+    background-color: #2a2e40 !important; 
+    border-color: #3b425d !important;
+}
+
+body.dark-theme .dado-valor,
+body.dark-theme .form-label {
+    color: #ffffff !important; 
+    opacity: 1 !important;
+}
+
+body.dark-theme .dado-label {
+    color: #94a3b8 !important; 
+    opacity: 1 !important;
+}
+
+body.dark-theme .cns-destaque {
+    color: #4ade80 !important; 
+}
+
+/* Substituição dos estilos Inline (Alertas e Labels) */
+.alerta-dados {
+    color: #443c00;
+    background-color: #fff3cd;
+    border: 1px solid #ffe69c;
+    font-size: 0.85rem;
+}
+
+.label-contato {
+    font-size: 0.9rem;
+}
+
+/* Garante que o alerta fique legível no tema escuro */
+body.dark-theme .alerta-dados {
+    background-color: #332701 !important;
+    color: #ffda6a !important;
+    border-color: #664d03 !important;
+}
