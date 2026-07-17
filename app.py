@@ -288,6 +288,7 @@ def cancelar_consulta(consulta_id):
     return redirect(url_for('dashboard_paciente'))
 
 
+# =====================================================
 # ROTAS DO PACIENTE
 # =====================================================
 
@@ -301,16 +302,24 @@ def dashboard_paciente():
     # Buscar todos os médicos disponíveis
     medicos = Medico.query.all()
     
-    # Buscar consultas agendadas (futuras) do paciente
     paciente_id = session['user_id']
+    
+    # Buscar consultas agendadas (futuras) do paciente
     consultas_agendadas = Consulta.query.filter_by(
         paciente_id=paciente_id,
         status='Agendada'
     ).filter(Consulta.data_hora >= datetime.now()).order_by(Consulta.data_hora).all()
     
+    # [NOVIDADE AQUI] Buscar histórico de consultas (Realizadas, Canceladas, Faltou)
+    historico_consultas = Consulta.query.filter(
+        Consulta.paciente_id == paciente_id,
+        Consulta.status != 'Agendada'
+    ).order_by(Consulta.data_hora.desc()).all()
+    
     return render_template('dashboard_paciente.html', 
                          medicos=medicos, 
-                         consultas=consultas_agendadas)
+                         consultas=consultas_agendadas,
+                         historico=historico_consultas)
 
 
 @app.route('/paciente/agendar', methods=['POST'])
@@ -320,7 +329,16 @@ def agendar_consulta():
         flash('Acesso negado!', 'error')
         return redirect(url_for('login'))
     
-    medico_id = int(request.form.get('medico_id'))
+    # Captura o ID do médico como texto primeiro
+    medico_id_str = request.form.get('medico_id')
+    
+    # Verifica se veio vazio (paciente não selecionou ninguém)
+    if not medico_id_str:
+        flash('Por favor, selecione um médico válido antes de confirmar.', 'error')
+        return redirect(url_for('dashboard_paciente'))
+        
+    medico_id = int(medico_id_str)
+    
     data_hora_str = request.form.get('data_hora')
     
     try:
@@ -375,29 +393,6 @@ def agendar_consulta():
         flash(f'Erro ao agendar consulta: {str(e)}', 'error')
     
     return redirect(url_for('dashboard_paciente'))
-
-
-@app.route('/paciente/historico')
-def historico_paciente():
-    """
-    Exibe o histórico de consultas passadas do paciente.
-    Mostra apenas consultas com status 'Realizada' ou 'Faltou'.
-    """
-    if 'user_type' not in session or session['user_type'] != 'paciente':
-        flash('Acesso negado!', 'error')
-        return redirect(url_for('login'))
-    
-    paciente_id = session['user_id']
-    
-    # Buscar consultas passadas com status definido pelo recepcionista
-    historico = Consulta.query.filter(
-        Consulta.paciente_id == paciente_id,
-        Consulta.data_hora < datetime.now(),
-        Consulta.status.in_(['Realizada', 'Faltou'])
-    ).order_by(Consulta.data_hora.desc()).all()
-    
-    return render_template('historico_paciente.html', historico=historico)
-
 
 # =====================================================
 # ROTAS DO RECEPCIONISTA
@@ -550,7 +545,44 @@ def atualizar_status_consulta(consulta_id, novo_status):
     
     return redirect(url_for('dashboard_recepcionista'))
 
-
+@app.route('/deletar_paciente/<int:paciente_id>', methods=['POST'])
+def deletar_paciente(paciente_id):
+    """
+    Rota para o recepcionista deletar um paciente do sistema.
+    Realiza a exclusão em cascata (Histórico -> Consultas -> Paciente).
+    """
+    if 'user_type' not in session or session['user_type'] != 'recepcionista':
+        flash('Acesso negado!', 'error')
+        return redirect(url_for('login'))
+    
+    try:
+        paciente = Paciente.query.get_or_404(paciente_id)
+        
+        # 1. Busca todas as consultas vinculadas a este paciente
+        consultas = Consulta.query.filter_by(paciente_id=paciente.id).all()
+        
+        # 2. Deleta o histórico e as consultas
+        for consulta in consultas:
+            # Apaga os registros de histórico associados a esta consulta primeiro
+            Historico.query.filter_by(consulta_id=consulta.id).delete()
+            
+            # Apaga a consulta em si
+            db.session.delete(consulta)
+            
+        # 3. Agora que não há mais dependências, deleta o paciente
+        db.session.delete(paciente)
+        
+        # Confirma todas as exclusões no banco de dados
+        db.session.commit()
+        
+        flash('Paciente e seus registros de consulta foram deletados com sucesso!', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        # O str(e) ajudará a ver exatamente qual erro o banco está retornando caso falhe
+        flash(f'Erro interno ao tentar deletar o paciente: {str(e)}', 'error')
+        
+    return redirect(url_for('dashboard_recepcionista'))
 # =====================================================
 # EXECUÇÃO DA APLICAÇÃO
 # =====================================================

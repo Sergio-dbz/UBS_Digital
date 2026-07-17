@@ -295,6 +295,17 @@
                                            title="Editar dados do paciente">
                                             <i class="bi bi-pencil-square me-1"></i> Editar
                                         </a>
+                                        
+                                        <!-- Botão de Deletar Paciente -->
+                                        <form action="{{ url_for('deletar_paciente', paciente_id=paciente.id) }}" method="POST" class="d-inline">
+                                            <!-- Botão que aciona o Modal de Deletar -->
+                                            <button type="button" class="btn btn-sm btn-outline-danger ms-1 delete-patient-btn" 
+                                                    data-paciente-id="{{ paciente.id }}" 
+                                                    data-paciente-nome="{{ paciente.nome }}" 
+                                                    title="Deletar paciente">
+                                                    <i class="bi bi-trash me-1"></i> Deletar
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -355,6 +366,33 @@
                 <div class="d-flex justify-content-center gap-2">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
                     <a id="confirmReceptionistStatusLink" href="#" class="btn btn-schedule-success">Confirmar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="deletePatientModal" tabindex="-1" aria-labelledby="deletePatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-cancel-container">
+            <div class="modal-body text-center p-4">
+                <div class="cancel-icon mb-3">
+                    <i class="bi bi-trash-fill"></i>
+                </div>
+                <h4 class="modal-title mb-3" id="deletePatientModalLabel">Deletar Paciente?</h4>
+                <p class="modal-text mb-3" id="deletePatientMessage">
+                    Você está prestes a deletar este paciente do sistema.
+                </p>
+                <p class="modal-text mb-4 text-danger">
+                    <small><i class="bi bi-exclamation-triangle"></i> Atenção: Esta ação não pode ser desfeita.</small>
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <!-- O formulário de exclusão fica aqui dentro -->
+                    <form id="deletePatientForm" method="POST" action="">
+                        <button type="submit" class="btn btn-cancel-danger">Confirmar exclusão</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -513,5 +551,29 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+// Lógica do Modal de Deletar Paciente
+    const deleteModalElement = document.getElementById('deletePatientModal');
+    if (deleteModalElement) {
+        const deletePatientModal = new bootstrap.Modal(deleteModalElement);
+        const deletePatientButtons = document.querySelectorAll('.delete-patient-btn');
+        const deletePatientMessage = document.getElementById('deletePatientMessage');
+        const deletePatientForm = document.getElementById('deletePatientForm');
+
+        deletePatientButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                // Pega os dados do botão clicado
+                const pacienteId = this.getAttribute('data-paciente-id');
+                const pacienteNome = this.getAttribute('data-paciente-nome');
+                
+                // Atualiza a mensagem e o formulário
+                deletePatientMessage.innerHTML = 'Você está prestes a deletar o paciente <strong>' + pacienteNome + '</strong> do sistema.';
+                deletePatientForm.action = '/deletar_paciente/' + pacienteId;
+                
+                // Mostra o modal
+                deletePatientModal.show();
+            });
+        });
+    }
 </script>
 {% endblock %}
