@@ -13,6 +13,38 @@ try:
 except ImportError:
     from config import Config
 
+import re
+
+def validar_cpf(cpf):
+    """Verifica se o CPF é matematicamente válido"""
+    # Extrai apenas os números (tira pontos e traços)
+    cpf = re.sub(r'\D', '', str(cpf))
+
+    # Verifica se tem 11 dígitos
+    if len(cpf) != 11:
+        return False
+
+    # Verifica se todos os números são iguais (ex: 111.111.111-11 é inválido, mas passaria no cálculo)
+    if cpf == cpf[0] * 11:
+        return False
+
+    # Cálculo do 1º dígito verificador
+    soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
+    resto = (soma * 10) % 11
+    if resto == 10:
+        resto = 0
+    if resto != int(cpf[9]):
+        return False
+
+    # Cálculo do 2º dígito verificador
+    soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
+    resto = (soma * 10) % 11
+    if resto == 10:
+        resto = 0
+    if resto != int(cpf[10]):
+        return False
+
+    return True
 # =====================================================
 # INICIALIZAÇÃO DO FLASK E BANCO DE DADOS
 # =====================================================
@@ -433,6 +465,10 @@ def cadastrar_paciente():
     telefone = request.form.get('telefone')
     data_nascimento_str = request.form.get('data_nascimento')
 
+    if not validar_cpf(cpf):
+        flash('Erro: O CPF informado é inválido! Verifique a digitação.', 'error')
+        return redirect(url_for('dashboard_recepcionista'))
+    
     if not validar_telefone(telefone):
         flash('O telefone deve estar vazio ou conter um número completo com 10 ou 11 dígitos.', 'error')
         return redirect(url_for('dashboard_recepcionista'))
@@ -467,8 +503,6 @@ def cadastrar_paciente():
         flash('Não foi possível concluir o cadastro. Verifique os dados informados.', 'error')
     
     return redirect(url_for('dashboard_recepcionista'))
-
-# No arquivo app.py
 
 @app.route('/editar_paciente/<int:paciente_id>', methods=['GET', 'POST'])
 def editar_paciente(paciente_id):

@@ -152,7 +152,8 @@
                             Cadastrar Novo Paciente
                         </div>
                         <div class="card-body">
-                            <form method="POST" action="{{ url_for('cadastrar_paciente') }}">
+                            <!-- CORREÇÃO 1: Adicionado o id="formCadastro" -->
+                            <form id="formCadastro" method="POST" action="{{ url_for('cadastrar_paciente') }}">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="nome" class="form-label">
@@ -170,6 +171,11 @@
                                         </label>
                                         <input type="text" name="cpf" id="cpf" class="form-control" 
                                                placeholder="000.000.000-00" maxlength="14" required>
+                                        
+                                        <!-- CORREÇÃO 2: Adicionada a div de erro do CPF -->
+                                        <div class="invalid-feedback fw-bold">
+                                            CPF inválido! Verifique a digitação.
+                                        </div>
                                     </div>
                                 </div>
 
@@ -179,8 +185,10 @@
                                             <i class="bi bi-credit-card-2-front me-1"></i>
                                             Cartão SUS (CNS) *
                                         </label>
+                                        <!-- CORREÇÃO 3: Adicionado o oninput para bloquear letras no CNS -->
                                         <input type="text" name="cns" id="cns" class="form-control" 
-                                               placeholder="000000000000000" maxlength="15" required>
+                                               placeholder="000000000000000" maxlength="15" required
+                                               oninput="this.value = this.value.replace(/\D/g, '')">
                                         <small class="form-text">Número obrigatório de 15 dígitos</small>
                                     </div>
 
@@ -402,52 +410,51 @@
 
 {% block extra_js %}
 <script>
+// Função matemática de validação de CPF
+function validarCPFJS(cpf) {
+    cpf = cpf.replace(/\D/g, ''); 
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+    
+    let soma = 0;
+    let resto;
+    
+    for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i-1, i)) * (11 - i);
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) resto = 0;
+    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+    
+    soma = 0;
+    for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i-1, i)) * (12 - i);
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) resto = 0;
+    if (resto !== parseInt(cpf.substring(10, 11))) return false;
+    
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+    // ==========================================
+    // 1. ELEMENTOS DO CADASTRO DE PACIENTE
+    // ==========================================
+    const form = document.getElementById('formCadastro');
     const cpfInput = document.getElementById('cpf');
     const telefoneInput = document.getElementById('telefone');
-    const form = document.querySelector("form[action='{{ url_for('cadastrar_paciente') }}']");
     const passwordToggleButtons = document.querySelectorAll('.password-toggle');
+    
     const openPatientRegisterModalBtn = document.getElementById('openPatientRegisterModalBtn');
     const confirmPatientRegisterBtn = document.getElementById('confirmPatientRegisterBtn');
-    const patientRegisterModal = new bootstrap.Modal(document.getElementById('patientRegisterModal'));
-
-    passwordToggleButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            const targetId = this.getAttribute('data-target');
-            const input = document.getElementById(targetId);
-            const icon = this.querySelector('i');
-
-            if (input && icon) {
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.className = 'bi bi-eye-slash';
-                } else {
-                    input.type = 'password';
-                    icon.className = 'bi bi-eye';
-                }
-            }
-        });
-    });
-
-    if (openPatientRegisterModalBtn && form) {
-        openPatientRegisterModalBtn.addEventListener('click', function () {
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            patientRegisterModal.show();
-        });
+    const patientRegisterModalElement = document.getElementById('patientRegisterModal');
+    
+    // Instancia o modal apenas se ele existir na página
+    let patientRegisterModal;
+    if (patientRegisterModalElement) {
+        patientRegisterModal = new bootstrap.Modal(patientRegisterModalElement);
     }
 
-    if (confirmPatientRegisterBtn && form) {
-        confirmPatientRegisterBtn.addEventListener('click', function () {
-            patientRegisterModal.hide();
-            form.submit();
-        });
-    }
-
+    // --- Máscara de CPF ---
     if (cpfInput) {
         cpfInput.addEventListener('input', function () {
+            this.classList.remove('is-invalid'); // Tira o vermelho quando digita
             let value = this.value.replace(/\D/g, '').slice(0, 11);
             if (value.length > 9) {
                 value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
@@ -460,99 +467,137 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // --- Máscara de Telefone ---
     if (telefoneInput) {
         telefoneInput.addEventListener('input', function () {
             const digits = this.value.replace(/\D/g, '').slice(0, 11);
             let formatted = digits;
-
             if (digits.length === 10) {
                 formatted = '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 6) + '-' + digits.slice(6, 10);
             } else if (digits.length === 11) {
                 formatted = '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7, 11);
             }
-
             this.value = formatted;
         });
     }
 
-    if (form && cpfInput) {
-        form.addEventListener('submit', function (event) {
-            const rawCpf = cpfInput.value.replace(/\D/g, '');
-            if (rawCpf.length !== 11) {
-                event.preventDefault();
-                alert('O CPF deve conter exatamente 11 números.');
-                cpfInput.focus();
+    // --- Mostrar/Ocultar Senha ---
+    passwordToggleButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            if (input && icon) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'bi bi-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'bi bi-eye';
+                }
+            }
+        });
+    });
+
+    // ==========================================
+    // 2. LÓGICA DE VALIDAÇÃO E ENVIO DO MODAL
+    // ==========================================
+    if (openPatientRegisterModalBtn && form) {
+        openPatientRegisterModalBtn.addEventListener('click', function () {
+            // Passo A: Verifica se os campos obrigatórios estão preenchidos (HTML5)
+            if (!form.checkValidity()) {
+                form.reportValidity();
                 return;
             }
-            cpfInput.value = rawCpf;
 
+            // Passo B: Validação Matemática do CPF (A MÁGICA ACONTECE AQUI)
+            if (cpfInput) {
+                cpfInput.classList.remove('is-invalid');
+                if (!validarCPFJS(cpfInput.value)) {
+                    cpfInput.classList.add('is-invalid'); // Fica vermelho
+                    cpfInput.focus();
+                    return; // PARA TUDO: não abre o modal!
+                }
+            }
+
+            // Passo C: Validação de Telefone Completo
             if (telefoneInput) {
                 const rawTelefone = telefoneInput.value.replace(/\D/g, '');
-                const isEmpty = rawTelefone === '';
-                const isComplete = rawTelefone.length === 10 || rawTelefone.length === 11;
-
-                if (!isEmpty && !isComplete) {
-                    event.preventDefault();
-                    alert('O telefone deve estar vazio ou conter um número completo com 10 ou 11 dígitos.');
+                if (rawTelefone !== '' && rawTelefone.length !== 10 && rawTelefone.length !== 11) {
+                    alert('O telefone deve conter um número completo com 10 ou 11 dígitos.');
                     telefoneInput.focus();
-                    return;
+                    return; // PARA TUDO
                 }
-
-                telefoneInput.value = rawTelefone;
             }
+
+            // Se passou em todos os testes, ABRE O MODAL
+            patientRegisterModal.show();
         });
     }
 
-    const statusModal = new bootstrap.Modal(document.getElementById('receptionistStatusModal'));
-    const confirmButtons = document.querySelectorAll('.receptionist-confirm-btn');
-    const cancelButtons = document.querySelectorAll('.receptionist-cancel-btn');
-    const statusMessage = document.getElementById('receptionistStatusMessage');
-    const statusIcon = document.getElementById('receptionistStatusIcon');
-    const confirmLink = document.getElementById('confirmReceptionistStatusLink');
-
-    function openStatusModal(button) {
-        const consultaId = button.getAttribute('data-consulta-id');
-        const consultaData = button.getAttribute('data-consulta-data');
-        const pacienteNome = button.getAttribute('data-paciente-nome');
-        const action = button.getAttribute('data-action');
-
-        if (statusMessage) {
-            if (action === 'Realizada') {
-                statusMessage.innerHTML = 'Você está prestes a confirmar a presença de <strong>' + pacienteNome + '</strong> na consulta agendada para <strong>' + consultaData + '</strong>.';
-            } else {
-                statusMessage.innerHTML = 'Você está prestes a confirmar a ausência de <strong>' + pacienteNome + '</strong> na consulta agendada para <strong>' + consultaData + '</strong>.';
-            }
-        }
-
-        if (statusIcon) {
-            const iconClass = action === 'Realizada' ? 'bi bi-calendar2-check-fill' : 'bi bi-exclamation-triangle-fill';
-            statusIcon.innerHTML = '<i class="' + iconClass + '"></i>';
-            statusIcon.className = 'mb-3 ' + (action === 'Realizada' ? 'schedule-icon' : 'cancel-icon');
-        }
-
-        if (confirmLink) {
-            confirmLink.href = '/recepcionista/atualizar_status/' + consultaId + '/' + action;
-            confirmLink.className = 'btn ' + (action === 'Realizada' ? 'btn-schedule-success' : 'btn-cancel-danger');
-            confirmLink.textContent = action === 'Realizada' ? 'Confirmar presença' : 'Confirmar ausência';
-        }
-
-        statusModal.show();
+    // Quando clica em "Confirmar" dentro do modal, envia de verdade
+    if (confirmPatientRegisterBtn && form) {
+        confirmPatientRegisterBtn.addEventListener('click', function () {
+            patientRegisterModal.hide();
+            
+            // Remove as máscaras antes de enviar para o banco (opcional, dependendo do seu Python)
+            if(cpfInput) cpfInput.value = cpfInput.value.replace(/\D/g, '');
+            if(telefoneInput) telefoneInput.value = telefoneInput.value.replace(/\D/g, '');
+            
+            form.submit();
+        });
     }
 
-    confirmButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            openStatusModal(this);
-        });
-    });
 
-    cancelButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            openStatusModal(this);
-        });
-    });
-});
+    // ==========================================
+    // 3. LÓGICA DO MODAL DE STATUS DA CONSULTA
+    // ==========================================
+    const statusModalElement = document.getElementById('receptionistStatusModal');
+    if (statusModalElement) {
+        const statusModal = new bootstrap.Modal(statusModalElement);
+        const confirmButtons = document.querySelectorAll('.receptionist-confirm-btn');
+        const cancelButtons = document.querySelectorAll('.receptionist-cancel-btn');
+        const statusMessage = document.getElementById('receptionistStatusMessage');
+        const statusIcon = document.getElementById('receptionistStatusIcon');
+        const confirmLink = document.getElementById('confirmReceptionistStatusLink');
 
-// Lógica do Modal de Deletar Paciente
+        function openStatusModal(button) {
+            const consultaId = button.getAttribute('data-consulta-id');
+            const consultaData = button.getAttribute('data-consulta-data');
+            const pacienteNome = button.getAttribute('data-paciente-nome');
+            const action = button.getAttribute('data-action');
+
+            if (statusMessage) {
+                if (action === 'Realizada') {
+                    statusMessage.innerHTML = 'Você está prestes a confirmar a presença de <strong>' + pacienteNome + '</strong> na consulta agendada para <strong>' + consultaData + '</strong>.';
+                } else {
+                    statusMessage.innerHTML = 'Você está prestes a confirmar a ausência de <strong>' + pacienteNome + '</strong> na consulta agendada para <strong>' + consultaData + '</strong>.';
+                }
+            }
+
+            if (statusIcon) {
+                const iconClass = action === 'Realizada' ? 'bi bi-calendar2-check-fill' : 'bi bi-exclamation-triangle-fill';
+                statusIcon.innerHTML = '<i class="' + iconClass + '"></i>';
+                statusIcon.className = 'mb-3 ' + (action === 'Realizada' ? 'schedule-icon' : 'cancel-icon');
+            }
+
+            if (confirmLink) {
+                confirmLink.href = '/recepcionista/atualizar_status/' + consultaId + '/' + action;
+                confirmLink.className = 'btn ' + (action === 'Realizada' ? 'btn-schedule-success' : 'btn-cancel-danger');
+                confirmLink.textContent = action === 'Realizada' ? 'Confirmar presença' : 'Confirmar ausência';
+            }
+
+            statusModal.show();
+        }
+
+        confirmButtons.forEach(btn => btn.addEventListener('click', function() { openStatusModal(this); }));
+        cancelButtons.forEach(btn => btn.addEventListener('click', function() { openStatusModal(this); }));
+    }
+
+
+    // ==========================================
+    // 4. LÓGICA DO MODAL DE DELETAR PACIENTE
+    // ==========================================
     const deleteModalElement = document.getElementById('deletePatientModal');
     if (deleteModalElement) {
         const deletePatientModal = new bootstrap.Modal(deleteModalElement);
@@ -562,18 +607,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         deletePatientButtons.forEach(function (button) {
             button.addEventListener('click', function () {
-                // Pega os dados do botão clicado
                 const pacienteId = this.getAttribute('data-paciente-id');
                 const pacienteNome = this.getAttribute('data-paciente-nome');
                 
-                // Atualiza a mensagem e o formulário
                 deletePatientMessage.innerHTML = 'Você está prestes a deletar o paciente <strong>' + pacienteNome + '</strong> do sistema.';
                 deletePatientForm.action = '/deletar_paciente/' + pacienteId;
                 
-                // Mostra o modal
                 deletePatientModal.show();
             });
         });
     }
+});
 </script>
 {% endblock %}
