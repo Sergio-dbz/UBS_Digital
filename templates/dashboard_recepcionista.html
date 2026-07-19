@@ -152,8 +152,7 @@
                             Cadastrar Novo Paciente
                         </div>
                         <div class="card-body">
-                            <!-- CORREÇÃO 1: Adicionado o id="formCadastro" -->
-                            <form id="formCadastro" method="POST" action="{{ url_for('cadastrar_paciente') }}">
+                            <form id="formCadastro" method="POST" action="{{ url_for('cadastrar_paciente') }}" autocomplete="off"> 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="nome" class="form-label">
@@ -499,6 +498,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // ==========================================
+    // ZERAR O FORMULÁRIO AO CLICAR NA ABA
+    // ==========================================
+    const tabCadastrar = document.getElementById('cadastrar-tab');
+    
+    if (tabCadastrar && form) {
+        tabCadastrar.addEventListener('click', function() {
+            // 1. Apaga todos os textos digitados
+            form.reset(); 
+            
+            // 2. Remove qualquer borda vermelha de erro que tenha ficado para trás
+            const camposComErro = form.querySelectorAll('.is-invalid');
+            camposComErro.forEach(function(campo) {
+                campo.classList.remove('is-invalid');
+            });
+        });
+    }
+    
     // ==========================================
     // 2. LÓGICA DE VALIDAÇÃO E ENVIO DO MODAL
     // ==========================================
