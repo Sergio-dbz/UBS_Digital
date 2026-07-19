@@ -319,50 +319,6 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const cancelModal = new bootstrap.Modal(document.getElementById('cancelModal'));
-    const scheduleModal = new bootstrap.Modal(document.getElementById('scheduleModal'));
-    const cancelButtons = document.querySelectorAll('.cancel-consulta-btn');
-    const cancelData = document.getElementById('cancelConsultaData');
-    const confirmLink = document.getElementById('confirmCancelLink');
-    const scheduleButton = document.querySelector('.schedule-confirm-btn');
-    const confirmScheduleBtn = document.getElementById('confirmScheduleBtn');
-    const agendarForm = document.getElementById('agendarForm');
-
-    cancelButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            const consultaId = this.getAttribute('data-consulta-id');
-            const consultaData = this.getAttribute('data-consulta-data');
-
-            if (cancelData) {
-                cancelData.textContent = consultaData;
-            }
-
-            if (confirmLink) {
-                confirmLink.href = '/paciente/cancelar_consulta/' + consultaId;
-            }
-
-            cancelModal.show();
-        });
-    });
-
-    if (scheduleButton && agendarForm) {
-        scheduleButton.addEventListener('click', function () {
-            // Verifica se o campo do médico e a data foram preenchidos
-            if (!agendarForm.checkValidity()) {
-                agendarForm.reportValidity(); // Mostra o aviso "Preencha este campo"
-                return; // Impede que o código continue e abra o modal
-            }
-            scheduleModal.show();
-        });
-    }
-
-    if (confirmScheduleBtn && agendarForm) {
-        confirmScheduleBtn.addEventListener('click', function () {
-            agendarForm.submit();
-        });
-    }
-});
-</script>
+<!-- Script exclusivo do Dashboard do Paciente -->
+<script src="{{ url_for('static', filename='js/dashboard_paciente.js') }}"></script>
 {% endblock %}
