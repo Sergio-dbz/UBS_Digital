@@ -252,7 +252,10 @@ def atualizar_perfil_paciente():
     paciente = Paciente.query.get_or_404(paciente_id)
     
     novo_telefone = request.form.get('telefone')
+    novo_telefone = novo_telefone if novo_telefone else None
+    
     novo_email = request.form.get('email')
+    novo_email = novo_email.strip() if novo_email and novo_email.strip() != '' else None
     
     try:
         # 1. Atualizar Telefone
