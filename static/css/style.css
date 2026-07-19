@@ -1,11 +1,21 @@
-/* =====================================================
+/* ==========================================================================
    UBS Digital - Professional Medical Interface
    Design System: Medical Blue
-   ===================================================== */
+   
+   ÍNDICE:
+   1. VARIÁVEIS GLOBAIS (Cores, Fontes, Sombras)
+   2. RESET E TIPOGRAFIA BASE
+   3. ESTRUTURA E LAYOUT (Navbar, Footer, Dashboard)
+   4. COMPONENTES DE UI (Cards, Botões, Formulários, Tabelas, Modais, Alertas)
+   5. PÁGINAS ESPECÍFICAS (Login, Perfil do Paciente)
+   6. CLASSES UTILITÁRIAS (Cores customizadas, Status)
+   7. RESPONSIVIDADE
+   8. TEMA ESCURO (Dark Mode Overrides)
+   ========================================================================== */
 
-/* =====================================================
-   VARIÁVEIS DE COR - PALETA MEDICAL BLUE
-   ===================================================== */
+/* --------------------------------------------------------------------------
+   1. VARIÁVEIS GLOBAIS
+   -------------------------------------------------------------------------- */
 :root {
     /* Cores Primárias */
     --primary-blue: #0d6efd;
@@ -22,6 +32,7 @@
     --gray-100: #f1f3f5;
     --gray-200: #e9ecef;
     --gray-300: #dee2e6;
+    --gray-400: #ced4da;
     --gray-600: #6c757d;
     --gray-700: #495057;
     --gray-800: #343a40;
@@ -42,9 +53,9 @@
     --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* =====================================================
-   RESET E CONFIGURAÇÕES GLOBAIS
-   ===================================================== */
+/* --------------------------------------------------------------------------
+   2. RESET E TIPOGRAFIA BASE
+   -------------------------------------------------------------------------- */
 * {
     margin: 0;
     padding: 0;
@@ -59,9 +70,16 @@ body {
     min-height: 100vh;
 }
 
-/* =====================================================
-   NAVBAR PROFISSIONAL
-   ===================================================== */
+/* --------------------------------------------------------------------------
+   3. ESTRUTURA E LAYOUT
+   -------------------------------------------------------------------------- */
+/* Navbar */
+.navbar {
+    background-color: var(--white) !important;
+    box-shadow: var(--shadow-sm);
+    padding: 1rem 0;
+}
+
 .navbar-brand {
     display: flex;
     align-items: center;
@@ -75,36 +93,78 @@ body {
     width: auto;
 }
 
-.navbar {
-    background-color: var(--white) !important;
-    box-shadow: var(--shadow-sm);
-    padding: 1rem 0;
-}
-
 .navbar-text {
     color: var(--gray-700);
     font-weight: 500;
 }
 
-.btn-logout {
-    background-color: var(--danger);
+.navbar-profile-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--gray-700);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.navbar-profile-link:hover,
+.navbar-profile-link:focus {
+    color: var(--primary-blue);
+    text-decoration: none;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
     color: var(--white);
-    border: none;
-    padding: 0.5rem 1.25rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    padding: 2.5rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0.75rem;
 }
 
-.btn-logout:hover {
-    background-color: #bb2d3b;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
+.dashboard-header h2 {
+    font-weight: 700;
+    margin: 0;
 }
 
-/* =====================================================
-   CARDS PROFISSIONAIS
-   ===================================================== */
+.dashboard-header p {
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+}
+
+/* Dashboard Sections */
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Footer */
+footer {
+    background-color: var(--white);
+    padding: 2rem 0;
+    margin-top: 4rem;
+    border-top: 1px solid var(--gray-300);
+    text-align: center;
+    color: var(--gray-600);
+}
+
+.footer-note {
+    font-size: 0.875rem;
+}
+
+/* --------------------------------------------------------------------------
+   4. COMPONENTES DE UI
+   -------------------------------------------------------------------------- */
+/* Cards */
 .card {
     border: none;
     border-radius: 0.75rem;
@@ -130,9 +190,44 @@ body {
     padding: 2rem;
 }
 
-/* =====================================================
-   FORMULÁRIOS MODERNOS
-   ===================================================== */
+/* Botões */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-primary { background-color: var(--primary-blue); color: var(--white); }
+.btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.btn-success { background-color: var(--success); color: var(--white); }
+.btn-success:hover { background-color: #157347; }
+
+.btn-danger { background-color: var(--danger); color: var(--white); }
+.btn-danger:hover { background-color: #bb2d3b; }
+
+.btn-info { background-color: var(--info); color: var(--gray-900); }
+.btn-info:hover { background-color: #31d2f2; }
+
+.btn-logout {
+    background-color: var(--danger);
+    color: var(--white);
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.btn-logout:hover { background-color: #bb2d3b; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Formulários */
 .form-label {
     font-weight: 600;
     color: var(--gray-700);
@@ -140,8 +235,7 @@ body {
     font-size: 0.9rem;
 }
 
-.form-control,
-.form-select {
+.form-control, .form-select {
     border: 2px solid var(--gray-300);
     border-radius: 0.5rem;
     padding: 0.75rem 1rem;
@@ -149,8 +243,7 @@ body {
     transition: all 0.3s ease;
 }
 
-.form-control:focus,
-.form-select:focus {
+.form-control:focus, .form-select:focus {
     border-color: var(--primary-blue);
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
 }
@@ -160,802 +253,226 @@ body {
     font-size: 0.875rem;
 }
 
-/* =====================================================
-   CAMPO DE SENHA
-   ===================================================== */
-.password-input-wrapper {
-    position: relative;
-}
-
-.password-input-wrapper .form-control {
-    min-height: 3rem;
-    padding-right: 3rem;
-}
-
+.password-input-wrapper { position: relative; }
+.password-input-wrapper .form-control { min-height: 3rem; padding-right: 3rem; }
 .password-input-wrapper .password-toggle {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2rem;
-    height: 2rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    background-color: transparent;
-    color: var(--gray-600);
-    border: none;
-    box-shadow: none;
+    position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+    width: 2rem; height: 2rem; display: inline-flex; align-items: center; justify-content: center;
+    padding: 0; background-color: transparent; color: var(--gray-600); border: none; box-shadow: none;
 }
+.password-input-wrapper .password-toggle:hover { color: var(--primary-blue); background-color: transparent; }
+.password-input-wrapper .password-toggle:focus { box-shadow: none; border: none; outline: none; }
 
-.password-input-wrapper .password-toggle:hover {
-    color: var(--primary-blue);
-    background-color: transparent;
-}
-
-.password-input-wrapper .password-toggle:focus {
-    box-shadow: none;
-    border: none;
-    outline: none;
-}
-
-/* =====================================================
-   COMPONENTES DE NAVEGAÇÃO
-   ===================================================== */
-.footer-note {
-    font-size: 0.875rem;
-}
-
-.dashboard-tabs-wrapper {
-    width: 100%;
-}
-
-.navbar-profile-link {
-    display: inline-flex;
-    align-items: center;
-    color: var(--gray-700);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-.navbar-profile-link:hover,
-.navbar-profile-link:focus {
-    color: var(--primary-blue);
-    text-decoration: none;
-}
-
-.dashboard-history-icon {
-    font-size: 3rem;
-    color: var(--primary-blue);
-}
-
-/* =====================================================
-   MODAL DE CANCELAMENTO
-   ===================================================== */
-.modal-cancel-container {
-    border: none;
-    border-radius: 1rem;
-    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18);
-    overflow: hidden;
-    animation: modalFadeIn 0.25s ease-out;
-}
-
-.modal-cancel-container .modal-body {
-    background: linear-gradient(135deg, var(--white) 0%, #f3f8ff 100%);
-}
-
-.cancel-icon {
-    width: 4.5rem;
-    height: 4.5rem;
-    margin: 0 auto;
-    border-radius: 50%;
-    background-color: rgba(220, 53, 69, 0.12);
-    color: var(--danger);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-}
-
-.schedule-icon {
-    width: 4.5rem;
-    height: 4.5rem;
-    margin: 0 auto;
-    border-radius: 50%;
-    background-color: rgba(25, 135, 84, 0.14);
-    color: var(--success);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-}
-
-.modal-title {
-    color: var(--gray-900);
-    font-weight: 700;
-}
-
-.modal-text {
-    color: var(--gray-700);
-    margin-bottom: 0.5rem;
-}
-
-.btn-cancel-danger {
-    background: linear-gradient(135deg, var(--danger) 0%, #bb2d3b 100%);
-    color: var(--white);
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    font-weight: 600;
-    transition: all 0.25s ease;
-}
-
-.btn-cancel-danger:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0.5rem 1rem rgba(220, 53, 69, 0.2);
-    color: var(--white);
-}
-
-.btn-schedule-success {
-    background: linear-gradient(135deg, var(--success) 0%, #157347 100%);
-    color: var(--white);
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    font-weight: 600;
-    transition: all 0.25s ease;
-}
-
-.btn-schedule-success:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0.5rem 1rem rgba(25, 135, 84, 0.2);
-    color: var(--white);
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* =====================================================
-   BOTÕES PROFISSIONAIS
-   ===================================================== */
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border: none;
-}
-
-.btn-primary {
-    background-color: var(--primary-blue);
-    color: var(--white);
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-success {
-    background-color: var(--success);
-}
-
-.btn-success:hover {
-    background-color: #157347;
-}
-
-.btn-danger {
-    background-color: var(--danger);
-}
-
-.btn-danger:hover {
-    background-color: #bb2d3b;
-}
-
-.btn-info {
-    background-color: var(--info);
-    color: var(--gray-900);
-}
-
-.btn-info:hover {
-    background-color: #31d2f2;
-}
-
-.btn-sm {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-}
-
-/* =====================================================
-   TABS PROFISSIONAIS
-   ===================================================== */
-.nav-tabs {
-    border-bottom: 2px solid var(--gray-300);
-    margin-bottom: 2rem;
-}
-
+/* Tabs (Navegação) */
+.dashboard-tabs-wrapper { width: 100%; }
+.nav-tabs { border-bottom: 2px solid var(--gray-300); margin-bottom: 2rem; }
 .nav-tabs .nav-link {
-    color: var(--gray-600);
-    font-weight: 600;
-    padding: 1rem 1.5rem;
-    border: none;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s ease;
+    color: var(--gray-600); font-weight: 600; padding: 1rem 1.5rem;
+    border: none; border-bottom: 3px solid transparent; transition: all 0.3s ease;
 }
+.nav-tabs .nav-link:hover { color: var(--primary-blue); border-bottom-color: var(--primary-light); }
+.nav-tabs .nav-link.active { color: var(--primary-blue); background-color: transparent; border-bottom-color: var(--primary-blue); }
 
-.nav-tabs .nav-link:hover {
-    color: var(--primary-blue);
-    border-bottom-color: var(--primary-light);
-}
-
-.nav-tabs .nav-link.active {
-    color: var(--primary-blue);
-    background-color: transparent;
-    border-bottom-color: var(--primary-blue);
-}
-
-/* =====================================================
-   TABELAS PROFISSIONAIS
-   ===================================================== */
+/* Tabelas */
 .table {
     background-color: var(--white);
     border-radius: 0.75rem;
     overflow: hidden;
     box-shadow: var(--shadow-sm);
 }
-
-.table thead {
-    background-color: var(--gray-100);
-}
-
+.table thead { background-color: var(--gray-100); }
 .table thead th {
-    color: var(--gray-800);
-    font-weight: 700;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    padding: 1rem;
-    border-bottom: 2px solid var(--gray-300);
+    color: var(--gray-800); font-weight: 700; text-transform: uppercase;
+    font-size: 0.75rem; letter-spacing: 0.05em; padding: 1rem; border-bottom: 2px solid var(--gray-300);
 }
+.table tbody td { padding: 1rem; vertical-align: middle; color: var(--gray-700); }
+.table tbody tr { transition: all 0.2s ease; }
+.table tbody tr:hover { background-color: var(--gray-50); }
 
-.table tbody td {
-    padding: 1rem;
-    vertical-align: middle;
-    color: var(--gray-700);
-}
-
-.table tbody tr {
-    transition: all 0.2s ease;
-}
-
-.table tbody tr:hover {
-    background-color: var(--gray-50);
-}
-
-/* =====================================================
-   LISTA DE PACIENTES
-   ===================================================== */
-.patient-phone-cell,
-.patient-cpf-cell {
-    white-space: nowrap;
-    min-width: 8.5rem;
-}
-
-/* =====================================================
-   BADGES DE STATUS
-   ===================================================== */
+/* Badges */
 .badge {
-    padding: 0.5rem 1rem;
-    border-radius: 2rem;
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    padding: 0.5rem 1rem; border-radius: 2rem; font-weight: 600;
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.badge-agendada { background-color: var(--warning); color: var(--gray-900); }
+.badge-realizada { background-color: var(--success); color: var(--white); }
+.badge-faltou { background-color: var(--danger); color: var(--white); }
+
+/* Modais */
+.modal-cancel-container {
+    border: none; border-radius: 1rem; box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18);
+    overflow: hidden; animation: modalFadeIn 0.25s ease-out;
+}
+.modal-cancel-container .modal-body { background: linear-gradient(135deg, var(--white) 0%, #f3f8ff 100%); }
+.cancel-icon {
+    width: 4.5rem; height: 4.5rem; margin: 0 auto; border-radius: 50%;
+    background-color: rgba(220, 53, 69, 0.12); color: var(--danger);
+    display: flex; align-items: center; justify-content: center; font-size: 2rem;
+}
+.schedule-icon {
+    width: 4.5rem; height: 4.5rem; margin: 0 auto; border-radius: 50%;
+    background-color: rgba(25, 135, 84, 0.14); color: var(--success);
+    display: flex; align-items: center; justify-content: center; font-size: 2rem;
+}
+.modal-title { color: var(--gray-900); font-weight: 700; }
+.modal-text { color: var(--gray-700); margin-bottom: 0.5rem; }
+
+.btn-cancel-danger {
+    background: linear-gradient(135deg, var(--danger) 0%, #bb2d3b 100%); color: var(--white);
+    border: none; border-radius: 0.5rem; padding: 0.75rem 1.25rem; font-weight: 600; transition: all 0.25s ease;
+}
+.btn-cancel-danger:hover { transform: translateY(-1px); box-shadow: 0 0.5rem 1rem rgba(220, 53, 69, 0.2); color: var(--white); }
+
+.btn-schedule-success {
+    background: linear-gradient(135deg, var(--success) 0%, #157347 100%); color: var(--white);
+    border: none; border-radius: 0.5rem; padding: 0.75rem 1.25rem; font-weight: 600; transition: all 0.25s ease;
+}
+.btn-schedule-success:hover { transform: translateY(-1px); box-shadow: 0 0.5rem 1rem rgba(25, 135, 84, 0.2); color: var(--white); }
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.badge-agendada {
-    background-color: var(--warning);
-    color: var(--gray-900);
+/* Alertas e Flash Messages */
+.flash-message, .alert {
+    border: none; border-radius: 0.75rem; padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem; border-left: 4px solid; font-weight: 500;
 }
+.flash-message { box-shadow: var(--shadow-sm); border-left-color: var(--primary-blue); }
+.alert-success { background-color: #d1f2eb; color: #0f5132; border-left-color: var(--success); }
+.alert-danger { background-color: #f8d7da; color: #842029; border-left-color: var(--danger); }
+.alert-info { background-color: #cff4fc; color: #055160; border-left-color: var(--info); }
 
-.badge-realizada {
-    background-color: var(--success);
-    color: var(--white);
-}
+/* Ícones Gerais */
+.icon { width: 1.25rem; height: 1.25rem; vertical-align: middle; margin-right: 0.5rem; }
+.dashboard-history-icon { font-size: 3rem; color: var(--primary-blue); }
 
-.badge-faltou {
-    background-color: var(--danger);
-    color: var(--white);
-}
-
-/* =====================================================
-   ALERTAS PROFISSIONAIS
-   ===================================================== */
-.flash-message {
-    border: none;
-    border-radius: 0.75rem;
-    padding: 1rem 1.5rem;
-    margin-bottom: 1.5rem;
-    border-left: 4px solid var(--primary-blue);
-    box-shadow: var(--shadow-sm);
-    font-weight: 500;
-}
-
-.alert {
-    border: none;
-    border-radius: 0.75rem;
-    padding: 1rem 1.5rem;
-    margin-bottom: 1.5rem;
-    border-left: 4px solid;
-    font-weight: 500;
-}
-
-.alert-success {
-    background-color: #d1f2eb;
-    color: #0f5132;
-    border-left-color: var(--success);
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    color: #842029;
-    border-left-color: var(--danger);
-}
-
-.alert-info {
-    background-color: #cff4fc;
-    color: #055160;
-    border-left-color: var(--info);
-}
-
-/* =====================================================
-   LOGIN PAGE
-   ===================================================== */
+/* --------------------------------------------------------------------------
+   5. PÁGINAS ESPECÍFICAS
+   -------------------------------------------------------------------------- */
+/* Tela de Login */
 .login-container {
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 2rem;
 }
+.login-card { max-width: 480px; width: 100%; }
+.login-logo { text-align: center; margin-bottom: 2rem; }
+.login-logo img { max-width: 180px; height: auto; }
+.login-logo h2 { color: var(--primary-dark); font-weight: 700; margin-top: 1rem; font-size: 1.75rem; }
 
-.login-card {
-    max-width: 480px;
-    width: 100%;
+/* Tela de Perfil do Paciente (Ficha Cadastral) */
+.dado-caixa {
+    background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1.5rem;
 }
-
-.login-logo {
-    text-align: center;
-    margin-bottom: 2rem;
+.dado-label {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; 
 }
-
-.login-logo img {
-    max-width: 180px;
-    height: auto;
+.dado-valor {
+    font-size: 1rem; font-weight: 600; color: #212529; 
 }
-
-.login-logo h2 {
-    color: var(--primary-dark);
-    font-weight: 700;
-    margin-top: 1rem;
-    font-size: 1.75rem;
+.alerta-dados {
+    color: #443c00; background-color: #fff3cd; border: 1px solid #ffe69c; font-size: 0.85rem;
 }
+.label-contato { font-size: 0.9rem; }
 
-/* =====================================================
-   DASHBOARD
-   ===================================================== */
-.dashboard-header {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
-    color: var(--white);
-    padding: 2.5rem 0;
-    margin-bottom: 2rem;
-    border-radius: 0.75rem;
-}
+/* --------------------------------------------------------------------------
+   6. CLASSES UTILITÁRIAS
+   -------------------------------------------------------------------------- */
+.text-primary-custom { color: var(--primary-blue) !important; }
+.bg-primary-custom { background-color: var(--primary-blue) !important; }
+.border-primary-custom { border-color: var(--primary-blue) !important; }
 
-.dashboard-header h2 {
-    font-weight: 700;
-    margin: 0;
-}
+/* Mensagens de Dados Vazios (Inbox) */
+.no-data { text-align: center; padding: 3rem 2rem; color: var(--gray-600); }
+.no-data i { font-size: 3rem; color: var(--gray-400); margin-bottom: 1rem; }
 
-.dashboard-header p {
-    margin: 0.5rem 0 0 0;
-    opacity: 0.9;
-}
+/* Células de Tabelas */
+.patient-phone-cell, .patient-cpf-cell { white-space: nowrap; min-width: 8.5rem; }
 
-/* =====================================================
-   SEÇÕES DO DASHBOARD
-   ===================================================== */
-.section {
-    display: none;
-}
+/* Indicadores de Status Laterais */
+.status-row-agendada { border-left: 4px solid var(--warning); }
+.status-row-realizada { border-left: 4px solid var(--success); }
+.status-row-faltou { border-left: 4px solid var(--danger); }
 
-.section.active {
-    display: block;
-    animation: fadeIn 0.4s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* =====================================================
-   ÍCONES
-   ===================================================== */
-.icon {
-    width: 1.25rem;
-    height: 1.25rem;
-    vertical-align: middle;
-    margin-right: 0.5rem;
-}
-
-/* =====================================================
-   FOOTER
-   ===================================================== */
-footer {
-    background-color: var(--white);
-    padding: 2rem 0;
-    margin-top: 4rem;
-    border-top: 1px solid var(--gray-300);
-    text-align: center;
-    color: var(--gray-600);
-}
-
-/* =====================================================
-   MENSAGENS DE DADOS VAZIOS
-   ===================================================== */
-.no-data {
-    text-align: center;
-    padding: 3rem 2rem;
-    color: var(--gray-600);
-}
-
-.no-data i {
-    font-size: 3rem;
-    color: var(--gray-400);
-    margin-bottom: 1rem;
-}
-
-/* =====================================================
-   RESPONSIVIDADE
-   ===================================================== */
+/* --------------------------------------------------------------------------
+   7. RESPONSIVIDADE
+   -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
-    .navbar-brand img {
-        height: 35px;
-    }
-    
-    .card-body {
-        padding: 1.5rem;
-    }
-    
-    .table {
-        font-size: 0.875rem;
-    }
-    
-    .btn {
-        padding: 0.625rem 1.25rem;
-    }
-}
-
-/* =====================================================
-   UTILIDADES CUSTOMIZADAS
-   ===================================================== */
-.text-primary-custom {
-    color: var(--primary-blue) !important;
-}
-
-.bg-primary-custom {
-    background-color: var(--primary-blue) !important;
-}
-
-.border-primary-custom {
-    border-color: var(--primary-blue) !important;
-}
-
-/* Status Row Indicators */
-.status-row-agendada {
-    border-left: 4px solid var(--warning);
-}
-
-.status-row-realizada {
-    border-left: 4px solid var(--success);
-}
-
-.status-row-faltou {
-    border-left: 4px solid var(--danger);
+    .navbar-brand img { height: 35px; }
+    .card-body { padding: 1.5rem; }
+    .table { font-size: 0.875rem; }
+    .btn { padding: 0.625rem 1.25rem; }
 }
 
 /* ==========================================================================
-   TEMA ESCURO (DARK MODE) - Estilo Slate/Indigo
+   8. TEMA ESCURO (DARK MODE) - Estilo Slate/Indigo
    ========================================================================== */
+/* Fundo Principal e Texto Base */
+body.dark-theme { background-color: #1a1c28 !important; color: #e2e8f0 !important; }
 
-/* 1. Fundo Principal e Texto Base */
-body.dark-theme {
-    background-color: #1a1c28 !important; /* Cor de fundo principal (inspirada na imagem) */
-    color: #e2e8f0 !important; /* Texto claro confortável para leitura */
-}
-
-/* 2. Forçando a Navbar e o Footer a ficarem escuros (Sobrescrevendo o bg-light) */
+/* Estrutura (Navbar e Footer) */
 body.dark-theme #mainNavbar,
-body.dark-theme #mainFooter {
-    background-color: #222534 !important; /* Fundo dos painéis */
-    border-bottom: 1px solid #32374d !important;
-    border-top: 1px solid #32374d !important;
-}
-
+body.dark-theme #mainFooter { background-color: #222534 !important; border-bottom: 1px solid #32374d !important; border-top: 1px solid #32374d !important; }
 body.dark-theme .navbar-brand span, 
 body.dark-theme .navbar-text,
 body.dark-theme #mainFooter p,
-body.dark-theme #mainFooter .text-muted {
-    color: #cbd5e1 !important;
-}
+body.dark-theme #mainFooter .text-muted { color: #cbd5e1 !important; }
+body.dark-theme .navbar-nav .nav-link { color: #f8fafc !important; opacity: 1 !important; }
+body.dark-theme .navbar-nav .nav-link:hover { color: #3b82f6 !important; }
 
-/* 3. Ajuste dos Cards (Painéis flutuantes) */
-body.dark-theme .card {
-    background-color: #222534;
-    border: 1px solid #32374d;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
+/* Menu Suspenso (Dropdown) */
+body.dark-theme .dropdown-menu { background-color: #2a2e40; border: 1px solid #3b425d; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+body.dark-theme .dropdown-item { color: #e2e8f0; }
+body.dark-theme .dropdown-item:hover { background-color: #32374d; color: #ffffff; }
+body.dark-theme .dropdown-divider { border-top-color: #3b425d; }
 
-body.dark-theme .card-header {
-    background-color: #2a2e40;
-    color: #f8fafc;
-    border-bottom: 1px solid #32374d;
-}
+/* Cards e Listas */
+body.dark-theme .card { background-color: #222534; border: 1px solid #32374d; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); }
+body.dark-theme .card-header { background-color: #2a2e40; color: #f8fafc; border-bottom: 1px solid #32374d; }
+body.dark-theme .list-group-item { background-color: #222534; color: #e2e8f0; border-color: #32374d; }
 
-/* 4. A GRANDE CORREÇÃO: Tabelas */
-body.dark-theme .table {
-    color: #e2e8f0;
-    --bs-table-bg: transparent; /* Remove o fundo branco padrão do Bootstrap */
-    margin-bottom: 0;
-}
-
-body.dark-theme .table thead th {
-    background-color: #2a2e40; /* Cabeçalho da tabela */
-    color: #94a3b8; /* Texto sutil no cabeçalho */
-    border-bottom: 2px solid #3b425d;
-    font-weight: 600;
-}
-
-body.dark-theme .table tbody td {
-    background-color: #222534; /* Fundo das células igual ao Card */
-    color: #e2e8f0;
-    border-bottom: 1px solid #32374d;
-}
-
-/* Efeito ao passar o mouse na linha da tabela */
-body.dark-theme .table-hover tbody tr:hover td {
-    background-color: #2d3246; 
-    color: #ffffff;
-}
-
-/* 5. Inputs, Selects e Formulários */
+/* Formulários, Inputs e Selects */
 body.dark-theme input.form-control,
-body.dark-theme select.form-select {
-    background-color: #1a1c28; /* Fundo mais escuro para o input dar profundidade */
-    color: #e2e8f0;
-    border: 1px solid #3b425d;
-}
-
+body.dark-theme select.form-select { background-color: #1a1c28; color: #e2e8f0; border: 1px solid #3b425d; }
 body.dark-theme input.form-control:focus,
-body.dark-theme select.form-select:focus {
-    background-color: #1e2130;
-    color: #ffffff;
-    border-color: #3b82f6; /* Borda azul ao clicar */
-    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
-}
-
-body.dark-theme input.form-control::placeholder {
-    color: #64748b;
-}
-
-/* 6. Menu Suspenso (Dropdown) do Usuário */
-body.dark-theme .dropdown-menu {
-    background-color: #2a2e40;
-    border: 1px solid #3b425d;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-}
-
-body.dark-theme .dropdown-item {
-    color: #e2e8f0;
-}
-
-body.dark-theme .dropdown-item:hover {
-    background-color: #32374d;
-    color: #ffffff;
-}
-
-body.dark-theme .dropdown-divider {
-    border-top-color: #3b425d;
-}
-
-/* 7. Modais (Avisos na tela) */
-body.dark-theme .modal-content {
-    background-color: #222534;
-    color: #e2e8f0;
-    border: 1px solid #3b425d;
-}
-
-body.dark-theme .modal-header,
-body.dark-theme .modal-footer {
-    border-color: #32374d;
-}
-
-/* 8. Correção de Textos Secundários "Muted" (Para não sumirem) */
-body.dark-theme .text-muted {
-    color: #94a3b8 !important;
-}
-
-/* 9. Estilo das abas de navegação (Nav-tabs) */
-body.dark-theme .nav-tabs {
-    border-bottom: 1px solid #32374d;
-}
-
-body.dark-theme .nav-tabs .nav-link {
-    color: #94a3b8;
-}
-
-body.dark-theme .nav-tabs .nav-link:hover {
-    border-color: #32374d #32374d transparent;
-    color: #e2e8f0;
-}
-
-body.dark-theme .nav-tabs .nav-link.active {
-    background-color: #222534; /* Fica da mesma cor do card abaixo */
-    color: #3b82f6; /* Texto azul para destacar a aba ativa */
-    border-color: #32374d #32374d #222534;
-}
-
-/* Correção de visibilidade para o Nome do Usuário no Menu Suspenso */
-body.dark-theme .navbar-nav .nav-link {
-    color: #f8fafc !important; /* Branco bem claro para dar contraste */
-    opacity: 1 !important;     /* Remove a transparência padrão do Bootstrap */
-}
-
-/* Cor ao passar o mouse por cima do nome */
-body.dark-theme .navbar-nav .nav-link:hover {
-    color: #3b82f6 !important; /* Azul moderno */
-}
-
-/* ==========================================================================
-   CORREÇÃO PARA CAIXAS CLARAS E LISTAS (Ex: Meu Perfil)
-   ========================================================================== */
-
-/* 1. Força os fundos brancos (bg-white) a usarem a cor do tema escuro */
-body.dark-theme .bg-white {
-    background-color: #222534 !important;
-    color: #e2e8f0 !important;
-}
-
-/* 2. Correção caso os dados estejam usando a classe de lista do Bootstrap */
-body.dark-theme .list-group-item {
-    background-color: #222534;
-    color: #e2e8f0;
-    border-color: #32374d;
-}
-
-/* 3. Garante que ícones e textos em negrito não fiquem pretos no fundo escuro */
-body.dark-theme .list-group-item i,
-body.dark-theme .list-group-item strong,
-body.dark-theme .bg-white i,
-body.dark-theme .bg-white strong,
-body.dark-theme .text-dark {
-    color: #cbd5e1 !important;
-}
-
-/* 4. Ajuste do balão de Aviso (Amarelo) para o Dark Mode */
-body.dark-theme .alert-warning {
-    background-color: #332701 !important; /* Fundo amarelo super escuro */
-    color: #ffda6a !important; /* Texto amarelo claro/pastel */
-    border-color: #664d03 !important;
-}
-
-/* ==========================================================================
-   MELHORIA DE ACESSIBILIDADE - TELA DE LOGIN E FORMULÁRIOS
-   ========================================================================== */
-
-/* 1. Aumenta o brilho dos nomes dos campos (CPF, Senha, etc.) */
+body.dark-theme select.form-select:focus { background-color: #1e2130; color: #ffffff; border-color: #3b82f6; box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25); }
+body.dark-theme input.form-control::placeholder { color: #64748b; }
 body.dark-theme label,
-body.dark-theme .form-label {
-    color: #f8fafc !important; /* Branco super claro para máximo contraste */
-    font-weight: 500 !important; /* Deixa a letra um pouquinho mais grossa para facilitar a leitura */
-}
+body.dark-theme .form-label { color: #f8fafc !important; font-weight: 500 !important; }
+body.dark-theme .form-text { color: #cbd5e1 !important; }
 
-/* 2. Garante que os títulos principais dentro da caixa de login fiquem visíveis */
-body.dark-theme .card-body h1,
-body.dark-theme .card-body h2,
-body.dark-theme .card-body h3,
-body.dark-theme .card-body h4,
-body.dark-theme .card-body h5,
-body.dark-theme .card-body h6 {
-    color: #f8fafc !important;
-}
+/* Abas (Nav-tabs) */
+body.dark-theme .nav-tabs { border-bottom: 1px solid #32374d; }
+body.dark-theme .nav-tabs .nav-link { color: #94a3b8; }
+body.dark-theme .nav-tabs .nav-link:hover { border-color: #32374d #32374d transparent; color: #e2e8f0; }
+body.dark-theme .nav-tabs .nav-link.active { background-color: #222534; color: #3b82f6; border-color: #32374d #32374d #222534; }
 
-/* 3. Clareia os textos pequenos de ajuda (se houver algum embaixo da senha) */
-body.dark-theme .form-text {
-    color: #cbd5e1 !important; 
-}
+/* Tabelas */
+body.dark-theme .table { color: #e2e8f0; --bs-table-bg: transparent; margin-bottom: 0; }
+body.dark-theme .table thead th { background-color: #2a2e40; color: #94a3b8; border-bottom: 2px solid #3b425d; font-weight: 600; }
+body.dark-theme .table tbody td { background-color: #222534; color: #e2e8f0; border-bottom: 1px solid #32374d; }
+body.dark-theme .table-hover tbody tr:hover td { background-color: #2d3246; color: #ffffff; }
 
-/* ==========================================================================
-   ESTILOS DO PERFIL DO PACIENTE (Ficha Cadastral)
-   ========================================================================== */
+/* Modais */
+body.dark-theme .modal-content { background-color: #222534; color: #e2e8f0; border: 1px solid #3b425d; }
+body.dark-theme .modal-header,
+body.dark-theme .modal-footer { border-color: #32374d; }
 
-.dado-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6c757d; 
-}
+/* Utilitários Visuais (Acessibilidade e Forças de Cor) */
+body.dark-theme .text-muted { color: #94a3b8 !important; }
+body.dark-theme .bg-white { background-color: #222534 !important; color: #e2e8f0 !important; }
+body.dark-theme .list-group-item i, body.dark-theme .list-group-item strong,
+body.dark-theme .bg-white i, body.dark-theme .bg-white strong, body.dark-theme .text-dark { color: #cbd5e1 !important; }
+body.dark-theme .card-body h1, body.dark-theme .card-body h2, body.dark-theme .card-body h3,
+body.dark-theme .card-body h4, body.dark-theme .card-body h5, body.dark-theme .card-body h6 { color: #f8fafc !important; }
 
-.dado-valor {
-    font-size: 1rem; 
-    font-weight: 600;
-    color: #212529; 
-}
-
-/* Caixa para agrupar as informações no Tema Claro */
-.dado-caixa {
-    background-color: #f8f9fa; 
-    border: 1px solid #e9ecef; 
-    border-radius: 8px;
-    padding: 1.5rem;
-}
-
-/* Força as cores sólidas e fundo da caixa no Tema Escuro */
-body.dark-theme .dado-caixa {
-    background-color: #2a2e40 !important; 
-    border-color: #3b425d !important;
-}
-
-body.dark-theme .dado-valor,
-body.dark-theme .form-label {
-    color: #ffffff !important; 
-    opacity: 1 !important;
-}
-
-body.dark-theme .dado-label {
-    color: #94a3b8 !important; 
-    opacity: 1 !important;
-}
-
-body.dark-theme .cns-destaque {
-    color: #4ade80 !important; 
-}
-
-/* Substituição dos estilos Inline (Alertas e Labels) */
-.alerta-dados {
-    color: #443c00;
-    background-color: #fff3cd;
-    border: 1px solid #ffe69c;
-    font-size: 0.85rem;
-}
-
-.label-contato {
-    font-size: 0.9rem;
-}
-
-/* Garante que o alerta fique legível no tema escuro */
-body.dark-theme .alerta-dados {
-    background-color: #332701 !important;
-    color: #ffda6a !important;
-    border-color: #664d03 !important;
-}
+/* Perfil do Paciente no Dark Mode */
+body.dark-theme .dado-caixa { background-color: #2a2e40 !important; border-color: #3b425d !important; }
+body.dark-theme .dado-valor, body.dark-theme .form-label { color: #ffffff !important; opacity: 1 !important; }
+body.dark-theme .dado-label { color: #94a3b8 !important; opacity: 1 !important; }
+body.dark-theme .cns-destaque { color: #4ade80 !important; }
+body.dark-theme .alerta-dados { background-color: #332701 !important; color: #ffda6a !important; border-color: #664d03 !important; }
+body.dark-theme .alert-warning { background-color: #332701 !important; color: #ffda6a !important; border-color: #664d03 !important; }
