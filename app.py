@@ -3,7 +3,7 @@
 # Backend: Flask + MySQL
 # =====================================================
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
@@ -639,6 +639,39 @@ def deletar_paciente(paciente_id):
         flash(f'Erro interno ao tentar deletar o paciente: {str(e)}', 'error')
         
     return redirect(url_for('dashboard_recepcionista'))
+
+@app.route('/api/horarios_ocupados')
+def api_horarios_ocupados():
+    """
+    API Interna para o JavaScript consultar os horários já marcados.
+    Recebe o ID do médico e a data, devolve uma lista de horários.
+    """
+    medico_id = request.args.get('medico_id')
+    data_str = request.args.get('data')
+
+    if not medico_id or not data_str:
+        return jsonify([])
+
+    try:
+        # Define o início e o fim do dia solicitado
+        inicio_dia = datetime.strptime(data_str, '%Y-%m-%d')
+        fim_dia = inicio_dia.replace(hour=23, minute=59, second=59)
+
+        # Busca consultas agendadas para este médico neste dia específico
+        consultas = Consulta.query.filter(
+            Consulta.medico_id == medico_id,
+            Consulta.status == 'Agendada',
+            Consulta.data_hora >= inicio_dia,
+            Consulta.data_hora <= fim_dia
+        ).all()
+
+        # Extrai apenas a hora e o minuto de cada consulta achada (ex: '08:30')
+        horarios_ocupados = [c.data_hora.strftime('%H:%M') for c in consultas]
+        
+        return jsonify(horarios_ocupados)
+    except Exception as e:
+        return jsonify([])
+
 # =====================================================
 # EXECUÇÃO DA APLICAÇÃO
 # =====================================================

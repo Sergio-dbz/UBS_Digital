@@ -79,9 +79,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const listaHorarios = document.getElementById('lista-horarios');
     const dataHoraOculta = document.getElementById('data_hora_oculta');
     const turnoBtns = document.querySelectorAll('.turno-btn');
+    const medicoSelect = document.getElementById('medico'); // Captura a escolha do médico
 
     let dataSelecionada = '';
     let horaSelecionada = '';
+    let horariosOcupadosDoDia = []; // Vai guardar o que o Python responder
 
     // Dicionário de dias da semana e horários
     const nomesDias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -90,50 +92,72 @@ document.addEventListener('DOMContentLoaded', function () {
         tarde: ['13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30']
     };
 
+    // Se o paciente trocar de médico, resetamos as datas e horários por segurança
+    if (medicoSelect) {
+        medicoSelect.addEventListener('change', function() {
+            document.querySelectorAll('.date-card').forEach(c => c.classList.remove('selected'));
+            turnoContainer.classList.add('secao-oculta');
+            horariosContainer.classList.add('secao-oculta');
+            dataHoraOculta.value = '';
+        });
+    }
+
     if (diasContainer) {
-        // Gerar os próximos 5 dias úteis (Seg a Sex) a partir de amanhã
         let dataAtual = new Date();
-        dataAtual.setDate(dataAtual.getDate() + 1); // Começa de amanhã
+        dataAtual.setDate(dataAtual.getDate() + 1);
 
         let diasAdicionados = 0;
         
         while (diasAdicionados < 5) {
-            // Se não for Domingo (0) nem Sábado (6)
             if (dataAtual.getDay() !== 0 && dataAtual.getDay() !== 6) {
                 
-                // Formatação segura YYYY-MM-DD
                 const ano = dataAtual.getFullYear();
                 const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
                 const dia = String(dataAtual.getDate()).padStart(2, '0');
                 const dataFormatadaBanco = `${ano}-${mes}-${dia}`;
-                
                 const nomeDia = nomesDias[dataAtual.getDay()];
 
-                // Cria o Card do dia
                 const card = document.createElement('div');
                 card.className = 'date-card';
                 card.dataset.data = dataFormatadaBanco;
                 card.innerHTML = `<span class="d-block small text-uppercase mb-1">${nomeDia}</span><strong class="fs-5">${dia}/${mes}</strong>`;
 
-                // Evento de clique no Card do dia
                 card.addEventListener('click', function() {
-                    // Remove seleção dos outros
+                    // Proteção de UX: Obriga a escolher o médico primeiro
+                    if (!medicoSelect.value) {
+                        const alertaValidacao = document.getElementById('alerta-validacao');
+                        alertaValidacao.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Por favor, selecione o Médico primeiro.';
+                        alertaValidacao.classList.remove('d-none');
+                        medicoSelect.focus();
+                        return;
+                    } else {
+                        document.getElementById('alerta-validacao').classList.add('d-none');
+                    }
+
                     document.querySelectorAll('.date-card').forEach(c => c.classList.remove('selected'));
                     this.classList.add('selected');
                     
                     dataSelecionada = this.dataset.data;
                     horaSelecionada = '';
-                    dataHoraOculta.value = ''; // Zera o input
+                    dataHoraOculta.value = '';
                     
-                    // Mostra os turnos e esconde horários antigos
-                    turnoContainer.classList.remove('secao-oculta');
+                    // Mostra visual de "Carregando" (Opcional, mas dá charme)
                     horariosContainer.classList.add('secao-oculta');
                     
-                    // Reseta os botões de turno
-                    turnoBtns.forEach(btn => {
-                        btn.classList.remove('btn-primary', 'text-white');
-                        btn.classList.add('btn-outline-primary');
-                    });
+                    // CHAMA O PYTHON: Busca os horários ocupados via API (Fetch)
+                    fetch(`/api/horarios_ocupados?medico_id=${medicoSelect.value}&data=${dataSelecionada}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            horariosOcupadosDoDia = data; // Salva a lista de '08:30', '10:00', etc.
+                            
+                            turnoContainer.classList.remove('secao-oculta');
+                            
+                            turnoBtns.forEach(btn => {
+                                btn.classList.remove('btn-primary', 'text-white');
+                                btn.classList.add('btn-outline-primary');
+                            });
+                        })
+                        .catch(error => console.error('Erro ao buscar horários:', error));
                 });
 
                 diasContainer.appendChild(card);
@@ -142,10 +166,8 @@ document.addEventListener('DOMContentLoaded', function () {
             dataAtual.setDate(dataAtual.getDate() + 1);
         }
 
-        // Lógica de clique nos Turnos (Manhã / Tarde)
         turnoBtns.forEach(btn => {
             btn.addEventListener('click', function() {
-                // Alterna as cores dos botões
                 turnoBtns.forEach(b => {
                     b.classList.remove('btn-primary', 'text-white');
                     b.classList.add('btn-outline-primary');
@@ -169,20 +191,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 slot.className = 'time-slot';
                 slot.textContent = hora;
 
-                slot.addEventListener('click', function() {
-                    document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-                    this.classList.add('selected');
-                    
-                    horaSelecionada = hora;
-                    // Preenche o campo oculto exatamente como o Python espera: YYYY-MM-DDTHH:MM
-                    dataHoraOculta.value = `${dataSelecionada}T${horaSelecionada}`; 
+                // A MÁGICA ACONTECE AQUI:
+                // Se a hora estiver na lista que o Python retornou, pinta de cinza e bloqueia
+                if (horariosOcupadosDoDia.includes(hora)) {
+                    slot.classList.add('ocupado');
+                    slot.title = "Horário indisponível";
+                } else {
+                    // Só adiciona o evento de clique se o horário estiver livre
+                    slot.addEventListener('click', function() {
+                        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                        this.classList.add('selected');
+                        
+                        horaSelecionada = hora;
+                        dataHoraOculta.value = `${dataSelecionada}T${horaSelecionada}`; 
 
-                    // AQUI É ONDE ENTRA A NOVIDADE: Remove o alerta de erro da tela ao clicar num horário
-                    const alertaValidacao = document.getElementById('alerta-validacao');
-                    if (alertaValidacao) {
-                        alertaValidacao.classList.add('d-none');
-                    }
-                });
+                        const alertaValidacao = document.getElementById('alerta-validacao');
+                        if (alertaValidacao) {
+                            alertaValidacao.classList.add('d-none');
+                        }
+                    });
+                }
 
                 listaHorarios.appendChild(slot);
             });

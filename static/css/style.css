@@ -390,6 +390,23 @@ footer {
     user-select: none;
 }
 
+/* Estilo para horários já agendados */
+.time-slot.ocupado {
+    background-color: var(--gray-200);
+    color: var(--gray-500);
+    border-color: var(--gray-300);
+    cursor: not-allowed;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* Regra para o horário ocupado no Tema Escuro (Dark Mode) */
+body.dark-theme .time-slot.ocupado {
+    background-color: #151721;
+    color: #475569;
+    border-color: #1e2130;
+}
+
 .time-slot.selected {
     background-color: var(--primary-blue);
     color: var(--white);
