@@ -411,7 +411,26 @@ def agendar_consulta():
             flash(f'O Dr(a). {medico.nome} já possui uma consulta agendada para {data_hora.strftime("%d/%m/%Y às %H:%M")}. Escolha outro horário.', 'error')
             return redirect(url_for('dashboard_paciente'))
             
-        # Criar nova consulta
+        # ==========================================================
+        # NOVA REGRA (RN04): O Paciente só pode ter 1 consulta por dia
+        # ==========================================================
+        # Define o início e o fim do dia escolhido
+        inicio_do_dia = data_hora.replace(hour=0, minute=0, second=0)
+        fim_do_dia = data_hora.replace(hour=23, minute=59, second=59)
+        
+        consulta_existente_paciente = Consulta.query.filter(
+            Consulta.paciente_id == session['user_id'],
+            Consulta.status == 'Agendada',
+            Consulta.data_hora >= inicio_do_dia,
+            Consulta.data_hora <= fim_do_dia
+        ).first()
+        
+        if consulta_existente_paciente:
+            flash('Você já possui uma consulta agendada para esta data. O sistema permite apenas um agendamento por dia.', 'error')
+            return redirect(url_for('dashboard_paciente'))
+        # ==========================================================
+
+        # Criar nova consulta (Se passou por todas as validações)
         nova_consulta = Consulta(
             paciente_id=session['user_id'],
             medico_id=medico_id,
