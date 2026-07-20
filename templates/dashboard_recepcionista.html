@@ -288,8 +288,8 @@
                                 <tr>
                                     <td><strong>#{{ paciente.id }}</strong></td>
                                     <td class="patient-name-cell" title="{{ paciente.nome }}">{{ paciente.nome }}</td>
-                                    <td class="patient-cpf-cell">{{ paciente.cpf[:3] }}.{{ paciente.cpf[3:6] }}.{{ paciente.cpf[6:9] }}-{{ paciente.cpf[9:11] if paciente.cpf|length >= 11 else paciente.cpf }}</td>
-                                    <td>{{ paciente.cns }}</td>
+                                    <td class="patient-cpf-cell">{{ paciente.cpf[:3] }}.***.{{ paciente.cpf[6:9] }}-**</td>
+                                    <td>{{ paciente.cns[:3] }}***{{ paciente.cns[6:9] }}***{{ paciente.cns[12:] }}</td>
                                     <td class="patient-phone-cell">{{ paciente.telefone or '-' }}</td>
                                     <td>
                                         {{ paciente.data_nascimento.strftime('%d/%m/%Y') if paciente.data_nascimento else '-' }}

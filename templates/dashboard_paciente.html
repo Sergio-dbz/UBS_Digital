@@ -56,6 +56,8 @@
                         </div>
                         <div class="card-body">
                             <form id="agendarForm" method="POST" action="{{ url_for('agendar_consulta') }}">
+    
+                                <!-- Seleção do Médico -->
                                 <div class="mb-3">
                                     <label for="medico" class="form-label">
                                         <i class="bi bi-person-badge me-1"></i>
@@ -71,20 +73,55 @@
                                     </select>
                                 </div>
 
-                                <div class="mb-4">
-                                    <label for="data_hora" class="form-label">
-                                        <i class="bi bi-calendar-event me-1"></i>
-                                        Data e Hora
-                                    </label>
-                                    <input type="datetime-local" name="data_hora" id="data_hora" 
-                                           class="form-control" required>
-                                    <small class="form-text">Selecione uma data e hora futura</small>
+                            <!-- Nova Seleção de Data e Hora (Cards) -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    Escolha a Data e Horário
+                                </label>
+
+                                <!-- 1. Cards dos Dias -->
+                                <div id="dias-container" class="d-flex gap-2 overflow-auto pb-2 mb-3">
+                                    <!-- O JavaScript vai injetar os dias da semana aqui -->
                                 </div>
 
+                                <!-- 2. Escolha do Turno (Invisível até escolher a data) -->
+                                <div id="turno-container" class="mb-3 secao-oculta">
+                                    <label class="form-label text-muted small fw-bold text-uppercase">Selecione o Turno</label>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-primary flex-fill turno-btn" data-turno="manha">
+                                            <i class="bi bi-sunrise me-1"></i> Manhã
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary flex-fill turno-btn" data-turno="tarde">
+                                            <i class="bi bi-sun me-1"></i> Tarde
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Horários Disponíveis (Invisível até escolher o turno) -->
+                                <div id="horarios-container" class="secao-oculta">
+                                    <label class="form-label text-muted small fw-bold text-uppercase">Horários Disponíveis</label>
+                                    <div id="lista-horarios" class="d-flex flex-wrap gap-2">
+                                        <!-- O JavaScript vai injetar os horários aqui -->
+                                    </div>
+                                </div>
+
+                                    <!-- Campo oculto que enviará a data/hora exata para o Python -->
+                                    <input type="hidden" name="data_hora" id="data_hora_oculta" required>
+                                </div>
+                                
+                                <!-- Alerta de Validação Customizado (Invisível por padrão) -->
+                                <div id="alerta-validacao" class="alert alert-warning d-none mb-3 shadow-sm" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    Por favor, selecione a data, o turno e o horário desejado para a consulta.
+                                </div>
+                                
+                                <!-- Botão de Confirmar -->
                                 <button type="button" class="btn btn-success w-100 schedule-confirm-btn">
                                     <i class="bi bi-check-circle me-2"></i>
                                     Confirmar Agendamento
                                 </button>
+    
                             </form>
                         </div>
                     </div>
