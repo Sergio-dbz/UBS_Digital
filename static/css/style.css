@@ -392,6 +392,15 @@ footer {
 /* Células de Tabelas */
 .patient-phone-cell, .patient-cpf-cell { white-space: nowrap; min-width: 8.5rem; }
 
+/* Nova regra para alinhar e cortar nomes longos */
+.patient-name-cell {
+    white-space: nowrap;        /* Impede que o texto quebre para a linha de baixo */
+    overflow: hidden;           /* Esconde o que passar do tamanho máximo */
+    text-overflow: ellipsis;    /* Coloca os "..." no final do texto cortado */
+    max-width: 15rem;           /* Define a largura máxima permitida (aprox. 240px) */
+    vertical-align: middle;
+}
+
 /* Indicadores de Status Laterais */
 .status-row-agendada { border-left: 4px solid var(--warning); }
 .status-row-realizada { border-left: 4px solid var(--success); }

@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
 
 try:
-    from .config import Config
+    from config import Config
 except ImportError:
     from config import Config
 
