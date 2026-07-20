@@ -34,11 +34,11 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <span class="d-block dado-label mb-1">CPF</span>
-                                    <span class="d-block dado-valor">{{ paciente.cpf }}</span>
+                                    <span class="d-block dado-valor">{{ paciente.cpf[:3] }}.{{ paciente.cpf[3:6] }}.{{ paciente.cpf[6:9] }}-{{ paciente.cpf[9:] }}</span>
                                 </div>
                                 <div class="col-sm-6 mt-3 mt-sm-0">
                                     <span class="d-block dado-label mb-1">Cartão SUS (CNS)</span>
-                                    <span class="d-block dado-valor text-success cns-destaque fw-bold">{{ paciente.cns }}</span>
+                                    <span class="d-block dado-valor">{{ paciente.cns }}</span>
                                 </div>
                             </div>
                             
