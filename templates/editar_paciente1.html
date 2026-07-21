@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base1.html" %}
 
 {% block title %}Editar Paciente - UBS Digital{% endblock %}
 
@@ -11,8 +11,11 @@
         </div>
     </div>
 
+    <!-- Alerta Global de Feedback da API -->
+    <div id="alerta-edicao" class="alert d-none mb-4 shadow-sm" role="alert"></div>
+
     <div class="mb-4">
-        <a href="{{ url_for('dashboard_recepcionista') }}" class="btn btn-secondary">
+        <a href="{{ url_for('pagina_dashboard_recepcionista') }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left me-2"></i> Voltar ao Painel
         </a>
     </div>
@@ -22,7 +25,8 @@
             <i class="bi bi-pencil-square me-2"></i> Formulário de Edição
         </div>
         <div class="card-body">
-            <form id="editPatientForm" action="{{ url_for('editar_paciente', paciente_id=paciente.id) }}" method="POST">
+            <!-- Formulário RESTful -->
+            <form id="editPatientForm" autocomplete="off" data-paciente-id="{{ paciente.id }}">
                 
                 <div class="row">
                     <div class="col-md-6">
@@ -49,7 +53,7 @@
                                 <i class="bi bi-calendar me-1"></i> Data de Nascimento
                             </label>
                             <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" 
-                                   value="{{ paciente.data_nascimento }}" required>
+                                   value="{{ paciente.data_nascimento.strftime('%Y-%m-%d') if paciente.data_nascimento else '' }}" required>
                         </div>
                     </div>
 
@@ -61,7 +65,8 @@
                                 <i class="bi bi-hospital me-1"></i> Cartão SUS (CNS)
                             </label>
                             <input type="text" class="form-control" id="cns" name="cns" 
-                                   value="{{ paciente.cns }}" placeholder="Apenas números (15 dígitos)" maxlength="15" required>
+                                   value="{{ paciente.cns }}" placeholder="Apenas números (15 dígitos)" maxlength="15" required
+                                   oninput="this.value = this.value.replace(/\D/g, '')">
                             <small class="form-text text-muted">Apenas números. Máximo 15 dígitos.</small>
                         </div>
 
@@ -79,7 +84,7 @@
                     <div class="col-12">
                         <hr>
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ url_for('dashboard_recepcionista') }}" class="btn btn-secondary">Cancelar</a>
+                            <a href="{{ url_for('pagina_dashboard_recepcionista') }}" class="btn btn-secondary">Cancelar</a>
                             <button type="button" id="openEditPatientModalBtn" class="btn btn-primary">
                                 <i class="bi bi-save me-2"></i> Salvar Alterações
                             </button>
@@ -116,5 +121,5 @@
 
 {% block extra_js %}
 <!-- Script exclusivo da página de Edição de Paciente -->
-<script src="{{ url_for('static', filename='js/editar_paciente.js') }}"></script>
+<script src="{{ url_for('static', filename='js/editar_paciente1.js') }}"></script>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base1.html" %}
 
 {% block title %}Dashboard Paciente - UBS Digital{% endblock %}
 
@@ -40,11 +40,11 @@
                 </button>
             </li>
         </ul>
-
     </div>
 
     <!-- Conteúdo das Tabs -->
     <div class="tab-content" id="dashboardTabContent">
+        
         <!-- Seção: Agendar Nova Consulta -->
         <div class="tab-pane fade show active" id="agendar-section" role="tabpanel">
             <div class="row">
@@ -55,7 +55,8 @@
                             Agendar Nova Consulta
                         </div>
                         <div class="card-body">
-                            <form id="agendarForm" method="POST" action="{{ url_for('agendar_consulta') }}">
+                            <!-- FORMULÁRIO RESTFUL (Sem action e method) -->
+                            <form id="agendarForm">
     
                                 <!-- Seleção do Médico -->
                                 <div class="mb-3">
@@ -73,50 +74,54 @@
                                     </select>
                                 </div>
 
-                            <!-- Nova Seleção de Data e Hora (Cards) -->
-                            <div class="mb-4">
-                                <label class="form-label">
-                                    <i class="bi bi-calendar-event me-1"></i>
-                                    Escolha a Data e Horário
-                                </label>
+                                <!-- Nova Seleção de Data e Hora (Cards) -->
+                                <div class="mb-4">
+                                    <label class="form-label">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        Escolha a Data e Horário
+                                    </label>
 
-                                <!-- 1. Cards dos Dias -->
-                                <div id="dias-container" class="d-flex gap-2 overflow-auto pb-2 mb-3">
-                                    <!-- O JavaScript vai injetar os dias da semana aqui -->
-                                </div>
-
-                                <!-- 2. Escolha do Turno (Invisível até escolher a data) -->
-                                <div id="turno-container" class="mb-3 secao-oculta">
-                                    <label class="form-label text-muted small fw-bold text-uppercase">Selecione o Turno</label>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-outline-primary flex-fill turno-btn" data-turno="manha">
-                                            <i class="bi bi-sunrise me-1"></i> Manhã
-                                        </button>
-                                        <button type="button" class="btn btn-outline-primary flex-fill turno-btn" data-turno="tarde">
-                                            <i class="bi bi-sun me-1"></i> Tarde
-                                        </button>
+                                    <!-- 1. Cards dos Dias -->
+                                    <div id="dias-container" class="d-flex gap-2 overflow-auto pb-2 mb-3">
+                                        <!-- O JavaScript vai injetar os dias da semana aqui -->
                                     </div>
-                                </div>
 
-                                <!-- 3. Horários Disponíveis (Invisível até escolher o turno) -->
-                                <div id="horarios-container" class="secao-oculta">
-                                    <label class="form-label text-muted small fw-bold text-uppercase">Horários Disponíveis</label>
-                                    <div id="lista-horarios" class="d-flex flex-wrap gap-2">
-                                        <!-- O JavaScript vai injetar os horários aqui -->
+                                    <!-- 2. Escolha do Turno (Invisível até escolher a data) -->
+                                    <div id="turno-container" class="mb-3 secao-oculta">
+                                        <label class="form-label text-muted small fw-bold text-uppercase">Selecione o Turno</label>
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-outline-primary flex-fill turno-btn" data-turno="manha">
+                                                <i class="bi bi-sunrise me-1"></i> Manhã
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary flex-fill turno-btn" data-turno="tarde">
+                                                <i class="bi bi-sun me-1"></i> Tarde
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
 
-                                    <!-- Campo oculto que enviará a data/hora exata para o Python -->
+                                    <!-- 3. Horários Disponíveis (Invisível até escolher o turno) -->
+                                    <div id="horarios-container" class="secao-oculta">
+                                        <label class="form-label text-muted small fw-bold text-uppercase">Horários Disponíveis</label>
+                                        <div id="lista-horarios" class="d-flex flex-wrap gap-2">
+                                            <!-- O JavaScript vai injetar os horários aqui -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Campo oculto que enviará a data/hora exata para a API -->
                                     <input type="hidden" name="data_hora" id="data_hora_oculta" required>
                                 </div>
                                 
-                                <!-- Alerta de Validação Customizado (Invisível por padrão) -->
+                                <!-- Alerta de Validação de Campos Incompletos -->
                                 <div id="alerta-validacao" class="alert alert-warning d-none mb-3 shadow-sm" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                    Por favor, selecione a data, o turno e o horário desejado para a consulta.
+                                    Por favor, selecione a data, o turno e o horário desejado.
+                                </div>
+
+                                <!-- Alerta de Retorno da API (Erros do Backend) -->
+                                <div id="alerta-agendamento" class="alert alert-danger d-none mb-3 shadow-sm" role="alert">
                                 </div>
                                 
-                                <!-- Botão de Confirmar -->
+                                <!-- Botão de Confirmar (Aciona o Modal) -->
                                 <button type="button" class="btn btn-success w-100 schedule-confirm-btn">
                                     <i class="bi bi-check-circle me-2"></i>
                                     Confirmar Agendamento
@@ -177,6 +182,9 @@
                     <i class="bi bi-calendar-check me-2"></i>
                     Minhas Consultas Agendadas
                 </div>
+                <!-- Div onde injetaremos um Alerta de Sucesso caso o paciente cancele uma consulta -->
+                <div id="alerta-cancelamento" class="alert alert-success d-none m-3 shadow-sm" role="alert"></div>
+
                 <div class="card-body">
                     {% if consultas %}
                     <div class="table-responsive">
@@ -184,30 +192,25 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        <i class="bi bi-calendar3 me-1"></i>
-                                        Data/Hora
+                                        <i class="bi bi-calendar3 me-1"></i> Data/Hora
                                     </th>
                                     <th>
-                                        <i class="bi bi-person-badge me-1"></i>
-                                        Médico
+                                        <i class="bi bi-person-badge me-1"></i> Médico
                                     </th>
                                     <th>
-                                        <i class="bi bi-heart-pulse me-1"></i>
-                                        Especialidade
+                                        <i class="bi bi-heart-pulse me-1"></i> Especialidade
                                     </th>
                                     <th>
-                                        <i class="bi bi-info-circle me-1"></i>
-                                        Status
+                                        <i class="bi bi-info-circle me-1"></i> Status
                                     </th>
                                     <th>
-                                        <i class="bi bi-gear me-1"></i>
-                                        Ações
+                                        <i class="bi bi-gear me-1"></i> Ações
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for consulta in consultas %}
-                                <tr class="status-row-{{ consulta.status.lower() }}">
+                                <tr class="status-row-{{ consulta.status.lower() }}" id="linha-consulta-{{ consulta.id }}">
                                     <td>
                                         <strong>{{ consulta.data_hora.strftime('%d/%m/%Y') }}</strong>
                                         <br>
@@ -221,12 +224,12 @@
                                         </span>
                                     </td>
                                     <td>
+                                        <!-- BOTÃO RESTFUL (Removido o link antigo) -->
                                         <button type="button" class="btn btn-sm btn-danger cancel-consulta-btn"
                                                 data-consulta-id="{{ consulta.id }}"
                                                 data-consulta-data="{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}"
                                                 title="Cancelar Consulta">
-                                            <i class="bi bi-x-circle me-1"></i>
-                                            Cancelar
+                                            <i class="bi bi-x-circle me-1"></i> Cancelar
                                         </button>
                                     </td>
                                 </tr>
@@ -240,8 +243,7 @@
                         <p>Você não possui consultas agendadas no momento</p>
                         <a href="#agendar-section" data-bs-toggle="tab" data-bs-target="#agendar-section" 
                            class="btn btn-primary mt-3">
-                            <i class="bi bi-calendar-plus me-2"></i>
-                            Agendar Consulta
+                            <i class="bi bi-calendar-plus me-2"></i> Agendar Consulta
                         </a>
                     </div>
                     {% endif %}
@@ -305,7 +307,10 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
+<!-- MODAL: Confirmar Agendamento -->
 <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-cancel-container">
@@ -322,6 +327,7 @@
                 </p>
                 <div class="d-flex justify-content-center gap-2">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <!-- O JavaScript interceptará este clique -->
                     <button type="button" class="btn btn-schedule-success" id="confirmScheduleBtn">Confirmar agendamento</button>
                 </div>
             </div>
@@ -329,6 +335,7 @@
     </div>
 </div>
 
+<!-- MODAL: Cancelar Consulta -->
 <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-cancel-container">
@@ -343,11 +350,15 @@
                 <p class="modal-text mb-4">
                     O cancelamento deve ser feito com no mínimo <strong>24 horas de antecedência</strong>.
                 </p>
+                <!-- Alerta de Erro de Cancelamento (Ex: Tentou cancelar faltando 2h) -->
+                <div id="alerta-erro-modal-cancelar" class="alert alert-danger d-none mb-3 text-start small" role="alert"></div>
+
                 <div class="d-flex justify-content-center gap-2">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
-                    <a id="confirmCancelLink" href="#" class="btn btn-cancel-danger">
+                    <!-- Agora é um botão (não um link) para o JS assumir -->
+                    <button type="button" id="confirmCancelBtn" class="btn btn-cancel-danger">
                         Confirmar cancelamento
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -357,5 +368,5 @@
 
 {% block extra_js %}
 <!-- Script exclusivo do Dashboard do Paciente -->
-<script src="{{ url_for('static', filename='js/dashboard_paciente.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_paciente1.js') }}"></script>
 {% endblock %}

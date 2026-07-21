@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base1.html' %}
 
 {% block title %}Meu Perfil - UBS Digital{% endblock %}
 
@@ -7,7 +7,7 @@
     
     <!-- Botão de Voltar -->
     <div class="mb-3">
-        <a href="{{ url_for('dashboard_paciente') }}" class="btn btn-outline-secondary btn-sm fw-bold">
+        <a href="{{ url_for('pagina_dashboard_paciente') }}" class="btn btn-outline-secondary btn-sm fw-bold">
             <i class="bi bi-arrow-left me-1"></i> Voltar ao Dashboard
         </a>
     </div>
@@ -60,20 +60,21 @@
                 <div class="col-md-6 border-start-md">
                     <h5 class="mb-4 fw-bold border-bottom pb-2">Informações de Contato</h5>
                     
-                    <form id="formPerfil" action="{{ url_for('atualizar_perfil_paciente') }}" method="POST">
+                    <!-- Alerta de Retorno da API -->
+                    <div id="alerta-perfil" class="alert d-none mb-3 shadow-sm" role="alert"></div>
+
+                    <!-- Formulário RESTful -->
+                    <form id="formPerfil" autocomplete="off">
                         
-                        <!-- Campo Telefone (Sem estilo inline) -->
+                        <!-- Campo Telefone -->
                         <div class="mb-3">
                             <label for="telefone" class="form-label fw-bold label-contato">Telefone / WhatsApp</label>
                             <input type="tel" class="form-control" id="telefone" name="telefone" 
                                    value="{{ paciente.telefone if paciente.telefone else '' }}" 
-                                   placeholder="Digite os 11 números"
-                                   maxlength="15"
-                                   oninput="mascaraTelefone(this)"
-                                   required>
+                                   placeholder="(00) 00000-0000" required>
                         </div>
                         
-                        <!-- Campo E-mail (Sem estilo inline) -->
+                        <!-- Campo E-mail -->
                         <div class="mb-4">
                             <label for="email" class="form-label fw-bold label-contato">E-mail</label>
                             <input type="email" class="form-control" id="email" name="email" 
@@ -82,7 +83,7 @@
                         </div>
                         
                         <!-- Botão que aciona a validação e o Modal -->
-                        <button type="button" class="btn btn-success w-100 fw-bold shadow-sm" onclick="validarEConfirmar()">
+                        <button type="button" class="btn btn-success w-100 fw-bold shadow-sm" id="btnPrepararSalvar">
                             <i class="bi bi-save me-2"></i> Salvar Alterações
                         </button>
                         
@@ -94,7 +95,7 @@
     </div>
 </div>
 
-<!-- Modal de Confirmação Padronizado -->
+<!-- Modal de Confirmação RESTful -->
 <div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -109,7 +110,7 @@
             </div>
             <div class="modal-footer border-top-0 pt-0">
                 <button type="button" class="btn btn-outline-secondary fw-bold" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success fw-bold px-4" onclick="document.getElementById('formPerfil').submit();">
+                <button type="button" class="btn btn-success fw-bold px-4" id="btnConfirmarSalvar">
                     <i class="bi bi-check-lg me-2"></i>Confirmar
                 </button>
             </div>
@@ -120,5 +121,5 @@
 
 {% block extra_js %}
 <!-- Script exclusivo da página de Perfil do Paciente -->
-<script src="{{ url_for('static', filename='js/perfil_paciente.js') }}"></script>
+<script src="{{ url_for('static', filename='js/perfil_paciente1.js') }}"></script>
 {% endblock %}

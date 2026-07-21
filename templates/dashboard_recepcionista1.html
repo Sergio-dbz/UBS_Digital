@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base1.html" %}
 
 {% block title %}Dashboard Recepcionista - UBS Digital{% endblock %}
 
@@ -14,6 +14,9 @@
             <p>Gerencie pacientes, consultas e atualize status de atendimentos</p>
         </div>
     </div>
+
+    <!-- Alerta Global de Feedback da API -->
+    <div id="alerta-recep" class="alert d-none mb-4 shadow-sm" role="alert"></div>
 
     <!-- Navegação por Tabs -->
     <ul class="nav nav-tabs nav-fill mb-4" id="recepTabs" role="tablist">
@@ -42,6 +45,7 @@
 
     <!-- Conteúdo das Tabs -->
     <div class="tab-content" id="recepTabContent">
+        
         <!-- Seção: Agenda de Consultas -->
         <div class="tab-pane fade show active" id="agenda-section" role="tabpanel">
             <div class="card">
@@ -57,28 +61,22 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>
-                                        <i class="bi bi-calendar-event me-1"></i>
-                                        Data/Hora
+                                        <i class="bi bi-calendar-event me-1"></i> Data/Hora
                                     </th>
                                     <th>
-                                        <i class="bi bi-person me-1"></i>
-                                        Paciente
+                                        <i class="bi bi-person me-1"></i> Paciente
                                     </th>
                                     <th>
-                                        <i class="bi bi-person-badge me-1"></i>
-                                        Médico
+                                        <i class="bi bi-person-badge me-1"></i> Médico
                                     </th>
                                     <th>
-                                        <i class="bi bi-heart-pulse me-1"></i>
-                                        Especialidade
+                                        <i class="bi bi-heart-pulse me-1"></i> Especialidade
                                     </th>
                                     <th>
-                                        <i class="bi bi-info-circle me-1"></i>
-                                        Status
+                                        <i class="bi bi-info-circle me-1"></i> Status
                                     </th>
                                     <th>
-                                        <i class="bi bi-gear me-1"></i>
-                                        Ações
+                                        <i class="bi bi-gear me-1"></i> Ações
                                     </th>
                                 </tr>
                             </thead>
@@ -152,12 +150,12 @@
                             Cadastrar Novo Paciente
                         </div>
                         <div class="card-body">
-                            <form id="formCadastro" method="POST" action="{{ url_for('cadastrar_paciente') }}" autocomplete="off"> 
+                            <!-- FORMULÁRIO RESTFUL -->
+                            <form id="formCadastroPaciente" autocomplete="off"> 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="nome" class="form-label">
-                                            <i class="bi bi-person me-1"></i>
-                                            Nome Completo *
+                                            <i class="bi bi-person me-1"></i> Nome Completo *
                                         </label>
                                         <input type="text" name="nome" id="nome" class="form-control" 
                                                placeholder="Nome completo do paciente" required>
@@ -165,13 +163,10 @@
 
                                     <div class="col-md-6 mb-3">
                                         <label for="cpf" class="form-label">
-                                            <i class="bi bi-card-text me-1"></i>
-                                            CPF *
+                                            <i class="bi bi-card-text me-1"></i> CPF *
                                         </label>
                                         <input type="text" name="cpf" id="cpf" class="form-control" 
                                                placeholder="000.000.000-00" maxlength="14" required>
-                                        
-                                        <!-- CORREÇÃO 2: Adicionada a div de erro do CPF -->
                                         <div class="invalid-feedback fw-bold">
                                             CPF inválido! Verifique a digitação.
                                         </div>
@@ -181,10 +176,8 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="cns" class="form-label">
-                                            <i class="bi bi-credit-card-2-front me-1"></i>
-                                            Cartão SUS (CNS) *
+                                            <i class="bi bi-credit-card-2-front me-1"></i> Cartão SUS (CNS) *
                                         </label>
-                                        <!-- CORREÇÃO 3: Adicionado o oninput para bloquear letras no CNS -->
                                         <input type="text" name="cns" id="cns" class="form-control" 
                                                placeholder="000000000000000" maxlength="15" required
                                                oninput="this.value = this.value.replace(/\D/g, '')">
@@ -193,8 +186,7 @@
 
                                     <div class="col-md-6 mb-3">
                                         <label for="senha" class="form-label">
-                                            <i class="bi bi-lock me-1"></i>
-                                            Senha de Acesso *
+                                            <i class="bi bi-lock me-1"></i> Senha de Acesso *
                                         </label>
                                         <div class="password-input-wrapper">
                                             <input type="password" name="senha" id="senha" class="form-control" 
@@ -209,32 +201,28 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="telefone" class="form-label">
-                                            <i class="bi bi-telephone me-1"></i>
-                                            Telefone
+                                            <i class="bi bi-telephone me-1"></i> Telefone
                                         </label>
                                         <input type="text" name="telefone" id="telefone" class="form-control" 
-                                               placeholder="(00) 00000-0000" maxlength="15" >
-                                        <small class="form-text">Deixe em branco ou informe um telefone completo com 10 ou 11 dígitos.</small>
+                                               placeholder="(00) 00000-0000" maxlength="15">
+                                        <small class="form-text">Informe o telefone completo.</small>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label for="data_nascimento" class="form-label">
-                                            <i class="bi bi-calendar-heart me-1"></i>
-                                            Data de Nascimento
+                                            <i class="bi bi-calendar-heart me-1"></i> Data de Nascimento
                                         </label>
-                                        <input type="date" name="data_nascimento" id="data_nascimento" 
-                                               class="form-control">
+                                        <input type="date" name="data_nascimento" id="data_nascimento" class="form-control">
                                     </div>
                                 </div>
 
                                 <div class="alert alert-info mt-3">
                                     <i class="bi bi-info-circle me-2"></i>
-                                    <strong>Importante:</strong> Após o cadastro, forneça o CPF e a senha ao paciente para que ele possa acessar o sistema.
+                                    <strong>Importante:</strong> Após o cadastro, forneça o CPF e a senha ao paciente.
                                 </div>
 
                                 <button type="button" id="openPatientRegisterModalBtn" class="btn btn-primary w-100 mt-3">
-                                    <i class="bi bi-check-circle me-2"></i>
-                                    Cadastrar Paciente
+                                    <i class="bi bi-check-circle me-2"></i> Cadastrar Paciente
                                 </button>
                             </form>
                         </div>
@@ -257,30 +245,12 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>
-                                        <i class="bi bi-person me-1"></i>
-                                        Nome
-                                    </th>
-                                    <th>
-                                        <i class="bi bi-card-text me-1"></i>
-                                        CPF
-                                    </th>
-                                    <th>
-                                        <i class="bi bi-credit-card-2-front me-1"></i>
-                                        Cartão SUS (CNS)
-                                    </th>
-                                    <th>
-                                        <i class="bi bi-telephone me-1"></i>
-                                        Telefone
-                                    </th>
-                                    <th>
-                                        <i class="bi bi-calendar-heart me-1"></i>
-                                        Data Nascimento
-                                    </th>
-                                    <th>
-                                        <i class="bi bi-gear me-1"></i>
-                                        Ações
-                                    </th>
+                                    <th><i class="bi bi-person me-1"></i> Nome</th>
+                                    <th><i class="bi bi-card-text me-1"></i> CPF</th>
+                                    <th><i class="bi bi-credit-card-2-front me-1"></i> Cartão SUS (CNS)</th>
+                                    <th><i class="bi bi-telephone me-1"></i> Telefone</th>
+                                    <th><i class="bi bi-calendar-heart me-1"></i> Data Nascimento</th>
+                                    <th><i class="bi bi-gear me-1"></i> Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -295,22 +265,19 @@
                                         {{ paciente.data_nascimento.strftime('%d/%m/%Y') if paciente.data_nascimento else '-' }}
                                     </td>
                                     <td>
-                                        <a href="{{ url_for('editar_paciente', paciente_id=paciente.id) }}" 
-                                           class="btn btn-sm btn-outline-primary" 
-                                           title="Editar dados do paciente">
+                                        <!-- Botão Editar (Abre modal ou redireciona para a tela de edição) -->
+                                        <a href="/recepcionista/paciente/editar/{{ paciente.id }}" 
+                                           class="btn btn-sm btn-outline-primary" title="Editar dados">
                                             <i class="bi bi-pencil-square me-1"></i> Editar
                                         </a>
                                         
-                                        <!-- Botão de Deletar Paciente -->
-                                        <form action="{{ url_for('deletar_paciente', paciente_id=paciente.id) }}" method="POST" class="d-inline">
-                                            <!-- Botão que aciona o Modal de Deletar -->
-                                            <button type="button" class="btn btn-sm btn-outline-danger ms-1 delete-patient-btn" 
-                                                    data-paciente-id="{{ paciente.id }}" 
-                                                    data-paciente-nome="{{ paciente.nome }}" 
-                                                    title="Deletar paciente">
-                                                    <i class="bi bi-trash me-1"></i> Deletar
-                                            </button>
-                                        </form>
+                                        <!-- Botão Deletar (Dispara o Modal RESTful) -->
+                                        <button type="button" class="btn btn-sm btn-outline-danger ms-1 delete-patient-btn" 
+                                                data-paciente-id="{{ paciente.id }}" 
+                                                data-paciente-nome="{{ paciente.nome }}" 
+                                                title="Deletar paciente">
+                                            <i class="bi bi-trash me-1"></i> Deletar
+                                        </button>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -321,11 +288,6 @@
                     <div class="no-data">
                         <i class="bi bi-people"></i>
                         <p>Nenhum paciente cadastrado no sistema</p>
-                        <a href="#cadastrar-section" data-bs-toggle="tab" data-bs-target="#cadastrar-section" 
-                           class="btn btn-primary mt-3">
-                            <i class="bi bi-person-plus me-2"></i>
-                            Cadastrar Primeiro Paciente
-                        </a>
                     </div>
                     {% endif %}
                 </div>
@@ -334,6 +296,7 @@
     </div>
 </div>
 
+<!-- MODAL: Confirmar Cadastro de Paciente -->
 <div class="modal fade" id="patientRegisterModal" tabindex="-1" aria-labelledby="patientRegisterModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-cancel-container">
@@ -342,12 +305,7 @@
                     <i class="bi bi-person-plus-fill"></i>
                 </div>
                 <h4 class="modal-title mb-3" id="patientRegisterModalLabel">Confirmar cadastro do paciente?</h4>
-                <p class="modal-text mb-3">
-                    Você está prestes a cadastrar este paciente no sistema.
-                </p>
-                <p class="modal-text mb-4">
-                    Verifique os dados antes de confirmar o cadastro.
-                </p>
+                <p class="modal-text mb-3">Você está prestes a cadastrar este paciente no sistema.</p>
                 <div class="d-flex justify-content-center gap-2">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
                     <button type="button" class="btn btn-schedule-success" id="confirmPatientRegisterBtn">Confirmar cadastro</button>
@@ -357,6 +315,7 @@
     </div>
 </div>
 
+<!-- MODAL: Atualizar Status de Consulta -->
 <div class="modal fade" id="receptionistStatusModal" tabindex="-1" aria-labelledby="receptionistStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-cancel-container">
@@ -365,19 +324,17 @@
                     <i class="bi bi-calendar2-check-fill"></i>
                 </div>
                 <h4 class="modal-title mb-3" id="receptionistStatusModalLabel">Atualizar status da consulta?</h4>
-                <p class="modal-text mb-3" id="receptionistStatusMessage">
-                    Confirme a atualização do status desta consulta.
-                </p>
+                <p class="modal-text mb-3" id="receptionistStatusMessage">Confirme a atualização do status.</p>
                 <div class="d-flex justify-content-center gap-2">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
-                    <a id="confirmReceptionistStatusLink" href="#" class="btn btn-schedule-success">Confirmar</a>
+                    <button type="button" id="confirmStatusChangeBtn" class="btn btn-schedule-success">Confirmar</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal de Confirmação de Exclusão -->
+<!-- MODAL: Deletar Paciente -->
 <div class="modal fade" id="deletePatientModal" tabindex="-1" aria-labelledby="deletePatientModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-cancel-container">
@@ -386,18 +343,13 @@
                     <i class="bi bi-trash-fill"></i>
                 </div>
                 <h4 class="modal-title mb-3" id="deletePatientModalLabel">Deletar Paciente?</h4>
-                <p class="modal-text mb-3" id="deletePatientMessage">
-                    Você está prestes a deletar este paciente do sistema.
-                </p>
+                <p class="modal-text mb-3" id="deletePatientMessage">Você está prestes a deletar este paciente.</p>
                 <p class="modal-text mb-4 text-danger">
                     <small><i class="bi bi-exclamation-triangle"></i> Atenção: Esta ação não pode ser desfeita.</small>
                 </p>
                 <div class="d-flex justify-content-center gap-2">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <!-- O formulário de exclusão fica aqui dentro -->
-                    <form id="deletePatientForm" method="POST" action="">
-                        <button type="submit" class="btn btn-cancel-danger">Confirmar exclusão</button>
-                    </form>
+                    <button type="button" id="confirmDeletePatientBtn" class="btn btn-cancel-danger">Confirmar exclusão</button>
                 </div>
             </div>
         </div>
@@ -407,5 +359,5 @@
 
 {% block extra_js %}
 <!-- Script exclusivo do Dashboard da Recepcionista -->
-<script src="{{ url_for('static', filename='js/dashboard_recepcionista.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_recepcionista1.js') }}"></script>
 {% endblock %}

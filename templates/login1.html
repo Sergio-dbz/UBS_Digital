@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base1.html" %}
 
 {% block title %}Login - UBS Digital{% endblock %}
 
@@ -12,6 +12,11 @@
                     <img src="{{ url_for('static', filename='img/logo1.png') }}" alt="UBS Digital">
                     <h2>UBS Digital</h2>
                     <p class="text-muted">Sistema de Gestão de Saúde</p>
+                </div>
+
+                <!-- ALERTA DE ERRO (Controlado pelo JavaScript) -->
+                <div id="alerta-login" class="alert alert-danger d-none mb-3 shadow-sm text-center" role="alert">
+                    <!-- Mensagem de erro aparecerá aqui -->
                 </div>
 
                 <!-- Tabs de Navegação -->
@@ -34,16 +39,16 @@
 
                 <!-- Conteúdo das Tabs -->
                 <div class="tab-content" id="loginTabContent">
+                    
                     <!-- Tab Paciente -->
                     <div class="tab-pane fade show active" id="paciente-content" role="tabpanel">
-                        <form method="POST" action="{{ url_for('login') }}" autocomplete="off">
-                            <input type="hidden" name="tipo" value="paciente">
-                            
+                        <!-- Formulário RESTful do Paciente -->
+                        <form id="loginFormPaciente" autocomplete="off">
                             <div class="mb-3">
                                 <label for="cpf" class="form-label">
                                     <i class="bi bi-card-text me-1"></i>CPF
                                 </label>
-                                <input type="text" class="form-control" id="cpf" name="usuario" 
+                                <input type="text" class="form-control" id="cpf" 
                                        placeholder="000.000.000-00" maxlength="14" required autofocus>
                             </div>
 
@@ -53,7 +58,7 @@
                                 </label>
                                 <div class="password-input-wrapper">
                                     <input type="password" class="form-control" id="senha-paciente" 
-                                           name="senha" placeholder="Digite sua senha" required>
+                                           placeholder="Digite sua senha" required>
                                     <button type="button" class="password-toggle" 
                                             data-target="senha-paciente" aria-label="Mostrar senha">
                                         <i class="bi bi-eye"></i>
@@ -77,14 +82,14 @@
 
                     <!-- Tab Recepcionista -->
                     <div class="tab-pane fade" id="recepcionista-content" role="tabpanel">
-                        <form method="POST" action="{{ url_for('login') }}" autocomplete="off">
-                            <input type="hidden" name="tipo" value="recepcionista">
+                        <!-- Formulário RESTful da Recepcionista -->
+                        <form id="loginFormRecepcionista" autocomplete="off">
                             
                             <div class="mb-3">
                                 <label for="login" class="form-label">
                                     <i class="bi bi-person-circle me-1"></i>Login
                                 </label>
-                                <input type="text" class="form-control" id="login" name="usuario" 
+                                <input type="text" class="form-control" id="login" 
                                        placeholder="Digite seu login" required>
                             </div>
 
@@ -94,7 +99,7 @@
                                 </label>
                                 <div class="password-input-wrapper">
                                     <input type="password" class="form-control" id="senha-recep" 
-                                           name="senha" placeholder="Digite sua senha" required>
+                                           placeholder="Digite sua senha" required>
                                     <button type="button" class="password-toggle" 
                                             data-target="senha-recep" aria-label="Mostrar senha">
                                         <i class="bi bi-eye"></i>
@@ -133,9 +138,7 @@
 </div>
 {% endblock %}
 
-{% block extra_css %}{% endblock %}
-
 {% block extra_js %}
 <!-- Script exclusivo da página de Login -->
-<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+<script src="{{ url_for('static', filename='js/login1.js') }}"></script>
 {% endblock %}
